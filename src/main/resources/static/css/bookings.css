@@ -1,0 +1,111 @@
+/* bookings.css */
+
+.bookings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: 'Inter', sans-serif;
+}
+
+.bookings-table th, .bookings-table td {
+    border: 1px solid #ddd;
+    padding: 12px 16px;
+    text-align: left;
+}
+
+.bookings-table th {
+    background-color: #007BFF;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.bookings-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.bookings-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.bookings-table .action-button {
+    background-color: #28a745;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border: none;
+}
+
+.bookings-table .action-button:hover {
+    background-color: #218838;
+}
+
+.bookings-table .delete-button {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border: none;
+}
+
+.bookings-table .delete-button:hover {
+    background-color: #c82333;
+}
+
+.order-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.order-form label {
+    font-weight: 500;
+    color: #333;
+}
+
+.order-form input,
+.order-form select,
+.order-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border 0.3s;
+    font-size: 1rem;
+}
+
+.order-form input:focus,
+.order-form select:focus,
+.order-form textarea:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+.order-form button {
+    align-self: flex-start;
+    background: #007BFF;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+.order-form button:hover {
+    background: #0056b3;
+}
+
+.edit-title {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 1rem;
+}

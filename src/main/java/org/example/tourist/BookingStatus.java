@@ -1,4 +1,9 @@
 package org.example.tourist;
 
-public class BookingStatus {
+public enum BookingStatus {
+    CREATED,
+    CONFIRMED,
+    CANCELLED,
+    COMPLETED
 }
+

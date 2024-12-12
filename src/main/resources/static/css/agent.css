@@ -1,0 +1,180 @@
+/* agents.css */
+
+.root {
+    margin-left: 40px;
+    width: calc(100% - 380px);
+}
+
+.head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.agent-item {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.agent-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.agent-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: opacity 0.3s;
+}
+
+.agent-item img:hover {
+    opacity: 0.9;
+}
+
+.title {
+    margin-top: 1rem;
+    color: #007BFF; /* Синий цвет для современного вида */
+    font-size: 1.5rem;
+    height: auto;
+}
+
+.description {
+    margin: 10px 0;
+    color: #555;
+    min-height: 50px;
+}
+
+.phone {
+    margin: 5px 0;
+    color: #888;
+    font-size: 0.95rem;
+}
+
+.addToCartButton {
+    margin-top: 10px;
+    background: #28a745; /* Зеленый цвет для действия */
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+.addToCartButton:hover {
+    background: #218838;
+}
+
+.agent-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    margin-top: 10px;
+}
+
+.agent-actions a svg {
+    width: 24px;
+    height: 24px;
+    fill: #007BFF;
+    transition: fill 0.3s;
+}
+
+.agent-actions a:hover svg {
+    fill: #0056b3;
+}
+
+.availabilityButton {
+    display: inline-block;
+    color: #fff;
+    background-color: #17a2b8; /* Бирюзовый для доступности */
+    border-radius: 12px;
+    padding: 8px 24px;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.availabilityButton.unavailable {
+    background-color: #dc3545; /* Красный для недоступности */
+}
+
+.edit-title {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.form-item label {
+    font-weight: 500;
+    color: #333;
+}
+
+.form-item input,
+.form-item textarea,
+.form-item select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border 0.3s;
+    font-size: 1rem;
+}
+
+.form-item input:focus,
+.form-item textarea:focus,
+.form-item select:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+button {
+    background: #007BFF;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.secondaryButton {
+    background: #6c757d;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.95rem;
+    transition: background 0.3s;
+}
+
+.secondaryButton:hover {
+    background: #5a6268;
+}
