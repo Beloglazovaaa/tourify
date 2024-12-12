@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{head.html :: head}"></head>
+
+<body>
+<header th:replace="header.html :: header"></header>
+
+<main class="container form-section">
+    <h2 class="page-title" th:text="${tourPackage.id == null ? 'Создание туристического пакета' : 'Редактирование туристического пакета'}">
+        Создание/Редактирование туристического пакета</h2>
+
+    <form class="form-container" th:action="${tourPackage.id == null ? '/tour-packages/create' : '/tour-packages/edit/' + tourPackage.id}"
+          method="post">
+        <div class="form-item">
+            <label for="name">Название:</label>
+            <input type="text" id="name" name="name" th:value="${tourPackage.name}" required>
+        </div>
+
+        <div class="form-item">
+            <label for="description">Описание:</label>
+            <textarea id="description" name="description" th:text="${tourPackage.description}" required></textarea>
+        </div>
+
+        <div class="form-item">
+            <label for="price">Цена:</label>
+            <input type="number" id="price" name="price" step="0.01" th:value="${tourPackage.price}" required>
+        </div>
+
+        <div class="form-item">
+            <label for="availability">Доступно:</label>
+            <input type="checkbox" id="availability" name="availability"
+                   th:checked="${tourPackage.availability ? 'checked' : null}">
+        </div>
+
+        <div class="form-item">
+            <label for="imageUrl">URL изображения:</label>
+            <input type="url" id="imageUrl" name="imageUrl" th:value="${tourPackage.imageUrl}">
+        </div>
+
+        <button type="submit">Сохранить</button>
+        <a href="/tour-packages" class="secondaryButton">Отмена</a>
+    </form>
+</main>
+
+<footer th:replace="~{footer.html :: footer}"></footer>
+</body>
+
+</html>
+

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{head.html :: head}"></head>
+
+<body>
+<header th:replace="header.html :: header"></header>
+
+<main class="root">
+    <div class="head">
+        <h2 class="page-title">Туристические Пакеты</h2>
+        <a class="secondaryButton" href="/tour-packages/create">Добавить пакет</a>
+    </div>
+    <form class="searchForm" action="/tour-packages/search" method="get">
+        <input type="text" name="name" placeholder="Поиск по туристическим пакетам">
+        <button type="submit">Поиск</button>
+    </form>
+
+    <div class="tour-packages-grid">
+        <div class="tour-package-item" th:each="tourPackage : ${tourPackages}">
+            <img th:src="${tourPackage.imageUrl}" alt="Изображение туристического пакета"/>
+            <h3 class="title" th:text="${tourPackage.name}">Название пакета</h3>
+            <p class="description" th:text="${tourPackage.description}">Описание пакета</p>
+            <p><span th:text="${tourPackage.price}">Цена</span> ₽</p>
+            <div class="tour-package-actions">
+                <form action="/cart/add" method="post" style="display: inline;">
+                    <input type="hidden" name="id" th:value="${tourPackage.id}">
+                    <button class="addToCartButton" th:disabled="${!tourPackage.availability}" type="submit">Добавить в корзину</button>
+                    <a th:href="'/tour-packages/edit/' + ${tourPackage.id}" class="secondaryButton">Редактировать</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <aside class="cart-sidebar">
+        <h3>Корзина</h3>
+        <ul class="cart-items">
+            <li class="cart-item" th:each="item : ${cartItems}">
+                <div>
+                    <img th:src="${item.imageUrl}" alt="Изображение туристического пакета"/>
+                </div>
+                <div class="cart-item-data">
+                    <span th:text="${item.name}">Название</span>
+                    <p><span th:text="${item.price}">Цена</span> ₽</p>
+                    <form action="/cart/remove" method="post" style="display: inline;">
+                        <input type="hidden" name="id" th:value="${item.id}">
+                        <button type="submit">Удалить</button>
+                    </form>
+                </div>
+            </li>
+        </ul>
+        <div class="cart-summary">
+            <p>
+                <strong>Итого:</strong>
+                <span th:text="${totalPrice}">0</span> ₽
+            </p>
+            <div class="cart-summary-buttons">
+                <form action="/cart/clear" method="post">
+                    <button class="secondaryButton" type="submit">Очистить корзину</button>
+                </form>
+                <form action="/bookings/create" method="post">
+                    <input type="hidden" name="tourPackageIds" th:value="'1,2,3'">
+                    <input type="hidden" name="totalAmount" th:value="${totalPrice}">
+                    <button type="submit">Оформить бронирование</button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+</main>
+<footer th:replace="~{footer.html :: footer}"></footer>
+</body>
+
+</html>
+

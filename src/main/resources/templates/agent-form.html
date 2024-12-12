@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{head.html :: head}"></head>
+
+<body>
+<header th:replace="header.html :: header"></header>
+
+<main class="container form-section">
+    <h2 class="page-title" th:text="${agent.id == null ? 'Добавление агента' : 'Редактирование агента'}"></h2>
+    <form class="form-container" th:action="${agent.id == null ? '/agents/create' : '/agents/edit/' + agent.id}"
+          method="post">
+        <div class="form-item">
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" th:value="${agent.name}" required>
+        </div>
+        <div class="form-item">
+            <label for="phoneNumber">Телефон:</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" th:value="${agent.phoneNumber}" required>
+        </div>
+        <div class="form-item">
+            <label for="isAvailable">Доступность:</label>
+            <input type="checkbox" id="isAvailable" name="isAvailable"
+                   th:checked="${agent.isAvailable ? 'checked' : null}">
+        </div>
+        <div class="form-item">
+            <label for="imageUrl">Ссылка на фото:</label>
+            <input type="url" id="imageUrl" name="imageUrl" th:value="${agent.imageUrl}">
+        </div>
+        <button type="submit">Сохранить</button>
+        <a href="/agents" class="secondaryButton">Отмена</a>
+    </form>
+</main>
+
+<footer th:replace="~{footer.html :: footer}"></footer>
+</body>
+
+</html>

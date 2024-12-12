@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{head.html :: head}"></head>
+
+<body>
+<header th:replace="header.html :: header"></header>
+
+<main class="container form-section">
+    <h2 class="page-title" th:text="${menuItem.id == null ? 'Создание пиццы' : 'Редактирование пиццы'}">
+        Создание/Редактирование пиццы</h2>
+
+    <form class="form-container" th:action="${menuItem.id == null ? '/menu/create' : '/menu/edit/' + menuItem.id}"
+          method="post">
+        <div class="form-item">
+            <label for="name">Название:</label>
+            <input type="text" id="name" name="name" th:value="${menuItem.name}" required>
+        </div>
+
+        <div class="form-item">
+            <label for="description">Описание:</label>
+            <textarea id="description" name="description" th:text="${menuItem.description}" required></textarea>
+        </div>
+
+        <div class="form-item">
+            <label for="price">Цена:</label>
+            <input type="number" id="price" name="price" step="0.01" th:value="${menuItem.price}" required>
+        </div>
+
+        <div class="form-item">
+            <label for="availability">Доступно:</label>
+            <input type="checkbox" id="availability" name="availability" th:checked="${menuItem.availability ? 'checked' : null}">
+        </div>
+
+        <div class="form-item">
+            <label for="imageUrl">URL изображения:</label>
+            <input type="url" id="imageUrl" name="imageUrl" th:value="${menuItem.imageUrl}">
+        </div>
+
+        <button type="submit">Сохранить</button>
+        <a href="/menu" class="secondaryButton">Отмена</a>
+    </form>
+</main>
+
+<footer th:replace="~{footer.html :: footer}"></footer>
+
+</body>
+
+</html>
