@@ -1,50 +1,62 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
-
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{head.html :: head}"></head>
 
 <body>
-<header th:replace="header.html :: header"></header>
+<header th:replace="~{header.html :: header}"></header>
 
-<main class="container form-section">
-    <h2 class="page-title" th:text="${tourPackage.id == null ? 'Создание туристического пакета' : 'Редактирование туристического пакета'}">
-        Создание/Редактирование туристического пакета</h2>
+<main class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="page-title">Список Бронирований</h2>
+        <a href="/tour-packages" class="secondaryButton">Назад к Турпакетам</a>
+    </div>
 
-    <form class="form-container" th:action="${tourPackage.id == null ? '/tour-packages/create' : '/tour-packages/edit/' + tourPackage.id}"
-          method="post">
-        <div class="form-item">
-            <label for="name">Название:</label>
-            <input type="text" id="name" name="name" th:value="${tourPackage.name}" required>
-        </div>
+    <!-- Сообщение об успешном выполнении действий -->
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <p th:text="${successMessage}"></p>
+    </div>
 
-        <div class="form-item">
-            <label for="description">Описание:</label>
-            <textarea id="description" name="description" th:text="${tourPackage.description}" required></textarea>
-        </div>
+    <!-- Таблица бронирований -->
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>№</th>
+            <th>Турпакет</th>
+            <th>Дата бронирования</th>
+            <th>Статус</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="booking, iterStat : ${bookings}">
+            <td th:text="${iterStat.index + 1}">1</td>
+            <td th:text="${booking.tourPackages[0].name}">Название Турпакета</td>
+            <td th:text="${#dates.format(booking.bookingDate, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</td>
+            <td th:text="${booking.status}">Активно</td>
+            <td>
+                <!-- Кнопка подтверждения -->
+                <form th:if="${booking.status == 'CREATED'}" th:action="@{/bookings/confirm/{id}(id=${booking.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-success btn-sm" title="Подтвердить">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </form>
 
-        <div class="form-item">
-            <label for="price">Цена:</label>
-            <input type="number" id="price" name="price" step="0.01" th:value="${tourPackage.price}" required>
-        </div>
-
-        <div class="form-item">
-            <label for="availability">Доступно:</label>
-            <input type="checkbox" id="availability" name="availability"
-                   th:checked="${tourPackage.availability ? 'checked' : null}">
-        </div>
-
-        <div class="form-item">
-            <label for="imageUrl">URL изображения:</label>
-            <input type="url" id="imageUrl" name="imageUrl" th:value="${tourPackage.imageUrl}">
-        </div>
-
-        <button type="submit">Сохранить</button>
-        <a href="/tour-packages" class="secondaryButton">Отмена</a>
-    </form>
+                <!-- Кнопка отмены -->
+                <form th:if="${booking.status != 'CANCELLED' and booking.status != 'COMPLETED'}" th:action="@{/bookings/cancel/{id}(id=${booking.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" title="Отменить" onclick="return confirm('Вы уверены, что хотите отменить это бронирование?');">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${bookings.empty}">
+            <td colspan="5" class="text-center">Нет бронирований для отображения.</td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 
 <footer th:replace="~{footer.html :: footer}"></footer>
 </body>
-
 </html>
 
