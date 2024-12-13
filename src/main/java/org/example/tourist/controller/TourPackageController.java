@@ -170,5 +170,14 @@ public class TourPackageController {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(r -> r.equals(role));
     }
+
+
+    // Отображение страницы с подробностями о туре
+    @GetMapping("/{id}")
+    public String viewTourPackage(@PathVariable Long id, Model model) {
+        TourPackage tourPackage = tourPackageService.getTourPackageById(id);
+        model.addAttribute("tourPackage", tourPackage);
+        return "tour-package-details"; // Шаблон для страницы деталей тура
+    }
 }
 

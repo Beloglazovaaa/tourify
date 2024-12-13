@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{head.html :: head}"></head>
+
+<body>
+<header th:replace="~{header.html :: header}"></header>
+
+<main class="root">
+  <div class="tour-package-detail">
+    <h2 th:text="${tourPackage.name}">Название пакета</h2>
+    <img th:src="${tourPackage.imageUrl != null ? tourPackage.imageUrl : '/images/default.png'}" alt="Изображение туристического пакета"/>
+    <p th:text="${tourPackage.description}">Описание пакета</p>
+    <p><strong>Цена: </strong><span th:text="${tourPackage.price}">Цена</span> ₽</p>
+    <p><strong>Продолжительность: </strong><span th:text="${tourPackage.duration}">Продолжительность</span></p>
+    <p>
+      <strong>Статус:</strong>
+      <span th:text="${tourPackage.availability != null && tourPackage.availability ? 'Доступен' : 'Недоступен'}"></span>
+    </p>
+
+    <!-- Форма для добавления в корзину -->
+    <form action="/cart/add" method="post" style="display: inline;">
+      <input type="hidden" name="id" th:value="${tourPackage.id}">
+      <button class="addToCartButton"
+              th:disabled="${tourPackage.availability == null or !tourPackage.availability}"
+              type="submit">Добавить в корзину</button>
+    </form>
+  </div>
+</main>
+
+<footer th:replace="~{footer.html :: footer}"></footer>
+
+</body>
+</html>
