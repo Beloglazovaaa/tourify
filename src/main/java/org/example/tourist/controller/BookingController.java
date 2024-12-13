@@ -61,17 +61,10 @@ public class BookingController {
     @GetMapping
     public String bookingsPage(Model model) {
         List<Booking> bookings = bookingService.getAllBookings();
-        bookings.forEach(booking -> {
-            System.out.println("Booking ID: " + booking.getId());
-            System.out.println("Tour Packages: " + booking.getTourPackages().size());
-            System.out.println("Booking Date: " + booking.getBookingDate());
-            System.out.println("Status: " + booking.getStatus());
-        });
         model.addAttribute("bookings", bookings);
         model.addAttribute("statuses", BookingStatus.values());
         return "bookings";
     }
-
 
     /**
      * Обновить статус бронирования из таблицы.
@@ -83,8 +76,15 @@ public class BookingController {
      */
     @PostMapping("/updateStatus")
     public String updateBookingStatusFromTable(@RequestParam Long bookingId, @RequestParam String status, RedirectAttributes redirectAttributes) {
-        bookingService.updateBookingStatus(bookingId, BookingStatus.valueOf(status));
-        redirectAttributes.addFlashAttribute("successMessage", "Статус бронирования обновлен.");
+        try {
+            BookingStatus newStatus = BookingStatus.valueOf(status);
+            bookingService.updateBookingStatus(bookingId, newStatus);
+            redirectAttributes.addFlashAttribute("successMessage", "Статус бронирования обновлен.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Некорректный статус бронирования.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/bookings";
     }
 
@@ -97,8 +97,12 @@ public class BookingController {
      */
     @PostMapping("/confirm/{id}")
     public String confirmBooking(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        bookingService.confirmBooking(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Бронирование подтверждено.");
+        try {
+            bookingService.confirmBooking(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Бронирование подтверждено.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/bookings";
     }
 
@@ -111,8 +115,12 @@ public class BookingController {
      */
     @PostMapping("/cancel/{id}")
     public String cancelBooking(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        bookingService.cancelBooking(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Бронирование отменено.");
+        try {
+            bookingService.cancelBooking(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Бронирование отменено.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/bookings";
     }
 }

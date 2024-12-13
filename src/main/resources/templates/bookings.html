@@ -30,22 +30,24 @@
         <tbody>
         <tr th:each="booking, iterStat : ${bookings}">
             <td th:text="${iterStat.index + 1}">1</td>
-            <td th:text="${booking.tourPackages[0].name}">Название Турпакета</td>
-            <td th:text="${#dates.format(booking.bookingDate, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</td>
-            <td th:text="${booking.status}">Активно</td>
             <td>
-                <!-- Кнопка подтверждения -->
-                <form th:if="${booking.status == 'CREATED'}" th:action="@{/bookings/confirm/{id}(id=${booking.id})}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-success btn-sm" title="Подтвердить">
-                        <i class="fas fa-check"></i>
-                    </button>
-                </form>
-
-                <!-- Кнопка отмены -->
-                <form th:if="${booking.status != 'CANCELLED' and booking.status != 'COMPLETED'}" th:action="@{/bookings/cancel/{id}(id=${booking.id})}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm" title="Отменить" onclick="return confirm('Вы уверены, что хотите отменить это бронирование?');">
-                        <i class="fas fa-times"></i>
-                    </button>
+                <ul>
+                    <li th:each="tourPackage : ${booking.tourPackages}" th:text="${tourPackage.name}">Название Турпакета</li>
+                </ul>
+            </td>
+            <td th:text="${#dates.format(booking.bookingDate, 'dd.MM.yyyy HH:mm')}">01.01.2024 12:00</td>
+            <td>
+                <!-- Форма для обновления статуса -->
+                <form th:action="@{/bookings/updateStatus}" method="post" class="form-inline">
+                    <input type="hidden" name="bookingId" th:value="${booking.id}" />
+                    <select name="status" class="form-select form-select-sm" th:value="${booking.status}">
+                        <option th:each="status : ${statuses}"
+                                th:value="${status}"
+                                th:text="${#strings.toUpperCase(status.toString())}"
+                                th:selected="${status} == ${booking.status}">
+                        </option>
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm ms-2">Сохранить</button>
                 </form>
             </td>
         </tr>
@@ -59,4 +61,3 @@
 <footer th:replace="~{footer.html :: footer}"></footer>
 </body>
 </html>
-

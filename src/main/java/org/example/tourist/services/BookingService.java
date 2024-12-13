@@ -71,10 +71,11 @@ public class BookingService {
      *
      * @param id     ID бронирования
      * @param status новый статус
-     * @throws RuntimeException если бронирование не найдено
+     * @throws RuntimeException если бронирование не найдено или статус не может быть обновлен
      */
     public void updateBookingStatus(Long id, BookingStatus status) {
         Booking booking = getBookingById(id);
+        // Добавьте логику проверки допустимых переходов статусов, если необходимо
         booking.setStatus(status);
         bookingRepository.save(booking);
     }
