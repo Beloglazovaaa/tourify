@@ -123,4 +123,24 @@ public class BookingController {
         }
         return "redirect:/bookings";
     }
+
+    /**
+     * Обработчик для удаления бронирования
+     *
+     * @param bookingId ID бронирования для удаления
+     * @param redirectAttributes атрибуты для перенаправления
+     * @return перенаправление на страницу с бронированиями
+     */
+    @PostMapping("/delete")
+    public String deleteBooking(@RequestParam Long bookingId, RedirectAttributes redirectAttributes) {
+        boolean success = bookingService.deleteBooking(bookingId);
+
+        if (success) {
+            redirectAttributes.addFlashAttribute("successMessage", "Бронирование успешно удалено.");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Не удалось удалить бронирование.");
+        }
+
+        return "redirect:/bookings";
+    }
 }

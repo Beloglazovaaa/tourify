@@ -81,19 +81,6 @@ public class BookingService {
     }
 
     /**
-     * Удалить бронирование по ID.
-     *
-     * @param id ID бронирования
-     * @throws RuntimeException если бронирование не найдено
-     */
-    public void deleteBooking(Long id) {
-        if (!bookingRepository.existsById(id)) {
-            throw new RuntimeException("Бронирование не найдено");
-        }
-        bookingRepository.deleteById(id);
-    }
-
-    /**
      * Подтвердить бронирование.
      *
      * @param id ID бронирования
@@ -121,6 +108,20 @@ public class BookingService {
         }
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+    }
+
+    /**
+     * Удалить бронирование по ID
+     *
+     * @param bookingId ID бронирования
+     * @return true, если удаление успешно, иначе false
+     */
+    public boolean deleteBooking(Long bookingId) {
+        if (bookingRepository.existsById(bookingId)) {
+            bookingRepository.deleteById(bookingId);
+            return true;
+        }
+        return false;
     }
 
 }

@@ -49,6 +49,12 @@
                     </select>
                     <button type="submit" class="btn btn-primary btn-sm ms-2">Сохранить</button>
                 </form>
+
+                <!-- Форма для удаления бронирования -->
+                <form th:action="@{/bookings/delete}" method="post" class="d-inline">
+                    <input type="hidden" name="bookingId" th:value="${booking.id}" />
+                    <button type="submit" class="btn btn-danger btn-sm ms-2">Удалить</button>
+                </form>
             </td>
         </tr>
         <tr th:if="${bookings.empty}">
