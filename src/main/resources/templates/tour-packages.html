@@ -3,7 +3,7 @@
 <head th:replace="~{head.html :: head}"></head>
 
 <body>
-<header th:replace="header.html :: header"></header>
+<header th:replace="~{header.html :: header}"></header>
 
 <main class="root">
     <div class="head">
@@ -26,10 +26,22 @@
                 <span th:text="${tourPackage.availability != null && tourPackage.availability ? 'Доступен' : 'Недоступен'}"></span>
             </p>
             <div class="tour-package-actions">
+                <!-- Форма добавления в корзину -->
                 <form action="/cart/add" method="post" style="display: inline;">
                     <input type="hidden" name="id" th:value="${tourPackage.id}">
-                    <button class="addToCartButton" th:disabled="${tourPackage.availability == null or !tourPackage.availability}" type="submit">Добавить в корзину</button>
-                    <a th:href="'/tour-packages/edit/' + ${tourPackage.id}" class="secondaryButton">Редактировать</a>
+                    <button class="addToCartButton"
+                            th:disabled="${tourPackage.availability == null or !tourPackage.availability}"
+                            type="submit">Добавить в корзину</button>
+                </form>
+
+                <a th:href="'/tour-packages/edit/' + ${tourPackage.id}" class="secondaryButton">Редактировать</a>
+
+                <!-- Форма удаления доступна только администраторам -->
+                <form th:if="${#authentication.principal.authorities.?[authority == 'ROLE_ADMIN']}"
+                      th:action="@{'/tour-packages/delete/' + ${tourPackage.id}}"
+                      method="post"
+                      style="display: inline;">
+                    <button class="deleteButton" type="submit">Удалить</button>
                 </form>
             </div>
         </div>
@@ -74,4 +86,3 @@
 </body>
 
 </html>
-

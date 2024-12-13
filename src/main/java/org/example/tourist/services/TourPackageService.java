@@ -1,5 +1,6 @@
 package org.example.tourist.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.example.tourist.models.TourPackage;
 import org.example.tourist.repositories.TourPackageRepository;
 import org.springframework.stereotype.Service;
@@ -89,9 +90,10 @@ public class TourPackageService {
      * @param id ID пакета
      */
     public void deleteTourPackage(Long id) {
-        if (!tourPackageRepository.existsById(id)) {
-            throw new RuntimeException("Туристический пакет не найден");
+        if (tourPackageRepository.existsById(id)) {
+            tourPackageRepository.deleteById(id); // Удаление пакета
+        } else {
+            throw new EntityNotFoundException("Туристический пакет с ID " + id + " не найден");
         }
-        tourPackageRepository.deleteById(id);
     }
 }

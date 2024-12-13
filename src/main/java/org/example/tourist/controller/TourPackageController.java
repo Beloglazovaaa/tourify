@@ -105,12 +105,13 @@ public class TourPackageController {
      */
     @PostMapping("/delete/{id}")
     public String deleteTourPackage(@PathVariable Long id, Principal principal) {
-        if (hasRole(principal, "ROLE_ADMIN")) {
-            tourPackageService.deleteTourPackage(id);
-            return "redirect:/tour-packages";
+        if (hasRole(principal, "ROLE_ADMIN")) { // Проверяем, есть ли у пользователя роль администратора
+            tourPackageService.deleteTourPackage(id); // Удаляем пакет из базы данных через сервис
+            return "redirect:/tour-packages"; // Возвращаемся на страницу с туристическими пакетами
         }
-        return "redirect:/access-denied";
+        return "redirect:/access-denied"; // Перенаправляем на страницу "Доступ запрещён"
     }
+
 
     /**
      * Показать страницу редактирования туристического пакета.
