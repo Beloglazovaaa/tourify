@@ -15,6 +15,7 @@ public class TourPackage {
     private String imageUrl;
     private Integer price;
     private Boolean availability;
+    private Integer duration;
 
     // Конструкторы
     public TourPackage() {}
@@ -25,6 +26,8 @@ public class TourPackage {
         this.imageUrl = imageUrl;
         this.price = price;
         this.availability = availability;
+        this.duration = duration;
+        this.price = price;
     }
 
     // Геттеры и Сеттеры
@@ -75,6 +78,15 @@ public class TourPackage {
     public void setAvailability(Boolean availability) {
         this.availability = availability;
     }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
 }
 
 

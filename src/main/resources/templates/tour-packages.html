@@ -17,14 +17,18 @@
 
     <div class="tour-packages-grid">
         <div class="tour-package-item" th:each="tourPackage : ${tourPackages}">
-            <img th:src="${tourPackage.imageUrl}" alt="Изображение туристического пакета"/>
+            <img th:src="${tourPackage.imageUrl != null ? tourPackage.imageUrl : '/images/default.png'}" alt="Изображение туристического пакета"/>
             <h3 class="title" th:text="${tourPackage.name}">Название пакета</h3>
             <p class="description" th:text="${tourPackage.description}">Описание пакета</p>
             <p><span th:text="${tourPackage.price}">Цена</span> ₽</p>
+            <p>
+                <strong>Статус:</strong>
+                <span th:text="${tourPackage.availability != null && tourPackage.availability ? 'Доступен' : 'Недоступен'}"></span>
+            </p>
             <div class="tour-package-actions">
                 <form action="/cart/add" method="post" style="display: inline;">
                     <input type="hidden" name="id" th:value="${tourPackage.id}">
-                    <button class="addToCartButton" th:disabled="${!tourPackage.availability}" type="submit">Добавить в корзину</button>
+                    <button class="addToCartButton" th:disabled="${tourPackage.availability == null or !tourPackage.availability}" type="submit">Добавить в корзину</button>
                     <a th:href="'/tour-packages/edit/' + ${tourPackage.id}" class="secondaryButton">Редактировать</a>
                 </form>
             </div>

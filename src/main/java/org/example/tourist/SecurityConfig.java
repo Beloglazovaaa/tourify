@@ -16,15 +16,33 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        // Разрешение доступа к статическим файлам
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+
+                        // Доступ к корзине для пользователей и администраторов
                         .requestMatchers("/cart/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/tour-packages/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers("/bookings/**").hasRole("ADMIN")
-                        .requestMatchers("/bookings/create").hasRole("USER")
-                        .requestMatchers("/bookings").hasRole("AGENT")
-                        .requestMatchers("/agents/**").hasRole("ADMIN")
-                        .requestMatchers("/agents").hasRole("AGENT")
+
+                        // Доступ к тур-пакетам (создание и редактирование) для агентов и админов
+                        .requestMatchers("/tour-packages/create", "/tour-packages/edit/**").hasAnyRole("ADMIN", "AGENT")
+
+                        // Удаление туров только для администраторов
+                        .requestMatchers("/tour-packages/delete/**").hasRole("ADMIN")
+
+                        // Бронирования: создание только для пользователей, изменение для администраторов и агентов
+                        .requestMatchers("/bookings/create").hasRole("USER") // Только для пользователей
+                        .requestMatchers("/bookings/**").hasAnyRole("ADMIN", "AGENT") // Для агентов и администраторов
+
+                        // Отзывы: пользователи могут добавлять/редактировать, админ удаляет
+                        .requestMatchers("/reviews/**").hasAnyRole("USER", "ADMIN") // Пользователь и админ могут работать с отзывами
+                        .requestMatchers("/reviews/delete/**").hasRole("ADMIN") // Админ может удалять отзывы
+
+                        // Доступ к агентам и клиентам только для администраторов
+                        .requestMatchers("/agents/**", "/users/**").hasRole("ADMIN") // Только админ видит агентов и пользователей
+
+                        // Страница логина и регистрации для всех
                         .requestMatchers("/login", "/register", "/").permitAll()
+
+                        // Для других запросов необходима авторизация
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -46,4 +64,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-
