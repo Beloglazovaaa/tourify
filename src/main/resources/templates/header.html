@@ -2,6 +2,7 @@
     <h1>YourAgencyName</h1>
     <div class="header-menu">
         <a href="/">Главная</a>
+        <a href="/about">Об авторе</a>
         <a href="/tour-packages" th:if="${#authorization.expression('hasRole(''ROLE_USER'') or hasRole(''ROLE_ADMIN'') or hasRole(''ROLE_AGENT'')')}">Туристические Пакеты</a>
         <a href="/bookings" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'') or hasRole(''ROLE_AGENT'')')}">Бронирования</a>
         <a href="/agents" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">Агенты</a>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Об авторе</title>
+  <link rel="stylesheet" href="/css/global.css">
+
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/tour-packages.css">
+  <link rel="stylesheet" href="/css/about.css">
+</head>
+<body>
+<header th:replace="~{header.html :: header}"></header>
+
+<main class="container">
+  <h1>Об авторе</h1>
+  <div class="about-author">
+    <img src="/images/author.jpg" alt="Фото автора" class="author-photo">
+    <div class="about-author-text">
+      <h2>Имя Автора</h2>
+      <p>
+        Добро пожаловать! Меня зовут Имя Автора, и я — разработчик этого веб-приложения. Мне нравится создавать современные,
+        удобные и функциональные веб-решения. Цель данного проекта — предоставить пользователям простой и приятный способ
+        находить и бронировать туристические пакеты, а также взаимодействовать с агентами и оставлять отзывы.
+      </p>
+      <p>
+        Я стараюсь использовать лучшие практики в разработке, уделяя внимание безопасности, удобству интерфейса и производительности.
+        В этом проекте применяются Spring Framework, Thymeleaf, а также современные подходы к стилю с использованием CSS-переменных и адаптивной верстки.
+      </p>
+      <p>
+        Если у вас есть вопросы, предложения или вы заметили ошибку — не стесняйтесь связаться со мной.
+      </p>
+      <a href="mailto:author@example.com" class="contact-link">Написать автору</a>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{footer.html :: footer}"></footer>
+</body>
+</html>
