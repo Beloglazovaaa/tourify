@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{head.html :: head}"></head>
 
 <body>
@@ -8,8 +8,14 @@
 <main class="root">
     <div class="head">
         <h2 class="page-title">Туристические Пакеты</h2>
-        <a class="secondaryButton" href="/tour-packages/create">Добавить пакет</a>
+        <!-- Кнопка "Добавить пакет" доступна только администратору и агенту -->
+        <a class="secondaryButton"
+           href="/tour-packages/create"
+           sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_AGENT')">
+            Добавить пакет
+        </a>
     </div>
+
     <form class="searchForm" action="/tour-packages/search" method="get">
         <input type="text" name="name" placeholder="Поиск по туристическим пакетам">
         <button type="submit">Поиск</button>
@@ -26,20 +32,26 @@
                 <span th:text="${tourPackage.availability != null && tourPackage.availability ? 'Доступен' : 'Недоступен'}"></span>
             </p>
             <div class="tour-package-actions">
-                <!-- Кнопка "Подробнее" -->
+                <!-- Кнопка "Подробнее" всегда доступна -->
                 <a th:href="'/tour-packages/details/' + ${tourPackage.id}" class="secondaryButton">Подробнее</a>
-                <!-- Форма добавления в корзину -->
-                <form action="/cart/add" method="post" style="display: inline;">
+
+                <!-- Добавить в корзину доступно только обычному пользователю -->
+                <form action="/cart/add" method="post" style="display: inline;"
+                      sec:authorize="hasRole('ROLE_USER')">
                     <input type="hidden" name="id" th:value="${tourPackage.id}">
                     <button class="addToCartButton"
                             th:disabled="${tourPackage.availability == null or !tourPackage.availability}"
                             type="submit">Добавить в корзину</button>
                 </form>
 
-                <a th:href="'/tour-packages/edit/' + ${tourPackage.id}" class="secondaryButton">Редактировать</a>
+                <!-- Изменить доступно администратору и агенту -->
+                <a th:href="'/tour-packages/edit/' + ${tourPackage.id}" class="secondaryButton"
+                   sec:authorize="hasRole('ROLE_ADMIN') or hasRole('ROLE_AGENT')">
+                    Редактировать
+                </a>
 
-                <!-- Форма удаления доступна только администраторам -->
-                <form th:if="${#authentication.principal.authorities.?[authority == 'ROLE_ADMIN']}"
+                <!-- Удалить доступно только администратору -->
+                <form sec:authorize="hasRole('ROLE_ADMIN')"
                       th:action="@{'/tour-packages/delete/' + ${tourPackage.id}}"
                       method="post"
                       style="display: inline;">
@@ -48,7 +60,10 @@
             </div>
         </div>
     </div>
-    <aside class="cart-sidebar">
+
+    <!-- Корзина доступна только обычному пользователю -->
+    <aside class="cart-sidebar"
+           sec:authorize="hasRole('ROLE_USER')">
         <h3>Корзина</h3>
         <ul class="cart-items">
             <li class="cart-item" th:each="item : ${cartItems}">
@@ -86,5 +101,4 @@
 </main>
 <footer th:replace="~{footer.html :: footer}"></footer>
 </body>
-
 </html>
