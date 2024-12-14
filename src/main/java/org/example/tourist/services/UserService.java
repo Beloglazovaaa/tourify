@@ -7,6 +7,7 @@ import org.example.tourist.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -24,11 +25,6 @@ public class UserService {
 
     /**
      * Регистрирует нового пользователя с заданным именем, паролем и ролью.
-     *
-     * @param username    имя пользователя
-     * @param rawPassword необработанный пароль
-     * @param roleName    имя роли
-     * @throws RuntimeException если пользователь уже существует или роль не найдена
      */
     public void registerUser(String username, String rawPassword, String roleName) {
         if (userRepository.findByUsername(username).isPresent()) {
@@ -48,22 +44,13 @@ public class UserService {
 
     /**
      * Добавить нового пользователя.
-     *
-     * @param user объект пользователя
-     * @return сохраненный пользователь
      */
     public User addUser(User user) {
-        // Можно добавить дополнительные проверки или валидацию
         return userRepository.save(user);
     }
 
     /**
-     * Обновить пользователя.
-     *
-     * @param id      ID пользователя
-     * @param updatedUser обновленный объект пользователя
-     * @return обновленный пользователь
-     * @throws RuntimeException если пользователь не найден
+     * Обновить данные о пользователе.
      */
     public User updateUser(Long id, User updatedUser) {
         User user = userRepository.findById(id)
@@ -79,9 +66,6 @@ public class UserService {
 
     /**
      * Удалить пользователя по ID.
-     *
-     * @param id ID пользователя
-     * @throws RuntimeException если пользователь не найден
      */
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
@@ -89,5 +73,11 @@ public class UserService {
         }
         userRepository.deleteById(id);
     }
-}
 
+    /**
+     * Найти пользователя по имени.
+     */
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+}

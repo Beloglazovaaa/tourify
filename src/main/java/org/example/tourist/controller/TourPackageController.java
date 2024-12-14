@@ -1,8 +1,13 @@
 package org.example.tourist.controller;
 
+import org.example.tourist.models.User;
 import org.example.tourist.models.Cart;
+import org.example.tourist.models.Review;
 import org.example.tourist.models.TourPackage;
+import org.example.tourist.services.ReviewService;
 import org.example.tourist.services.TourPackageService;
+import org.example.tourist.services.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,10 +23,14 @@ import java.util.List;
 public class TourPackageController {
     private final Cart cart;
     private final TourPackageService tourPackageService;
+    private final UserService userService;
+    private final ReviewService reviewService;
 
-    public TourPackageController(Cart cart, TourPackageService tourPackageService) {
+    public TourPackageController(Cart cart, TourPackageService tourPackageService, UserService userService, ReviewService reviewService) {
         this.cart = cart;
         this.tourPackageService = tourPackageService;
+        this.userService = userService;
+        this.reviewService = reviewService;
     }
 
     /**
@@ -172,12 +181,61 @@ public class TourPackageController {
     }
 
 
-    // Отображение страницы с подробностями о туре
     @GetMapping("/{id}")
-    public String viewTourPackage(@PathVariable Long id, Model model) {
+    public String viewTourPackage(@PathVariable Long id, Model model, Principal principal) {
         TourPackage tourPackage = tourPackageService.getTourPackageById(id);
         model.addAttribute("tourPackage", tourPackage);
-        return "tour-package-details"; // Шаблон для страницы деталей тура
+
+        // Получаем отзывы для данного турпакета
+        List<Review> reviews = reviewService.getReviewsByTourPackage(tourPackage);
+        model.addAttribute("reviews", reviews);
+
+        // Если нужно, передаем информацию о залогиненном пользователе
+        // model.addAttribute("loggedInUser", currentUser);
+
+        return "tour-package-details"; // Шаблон страницы деталей тура, где есть секция с отзывами
     }
+
+    // Обработчик для добавления отзыва
+    @PostMapping("/addReview")
+    @PreAuthorize("isAuthenticated()")
+    public String addReview(@RequestParam Long tourPackageId,
+                            @RequestParam int rating,
+                            @RequestParam String comment,
+                            Principal principal) {
+
+        // Находим соответствующий турпакет
+        TourPackage tourPackage = tourPackageService.getTourPackageById(tourPackageId);
+
+        // Находим текущего авторизованного пользователя (реализуйте логику получения User по principal)
+        User user = userService.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        // Создаем и сохраняем отзыв
+        Review review = new Review(user, tourPackage, rating, comment);
+        reviewService.saveReview(review);
+
+        return "redirect:/tour-packages/" + tourPackageId;
+    }
+
+    @GetMapping("/details/{id}")
+    public String getTourPackageDetails(@PathVariable("id") Long id, Model model) {
+        // Получаем пакет по ID
+        TourPackage tourPackage = tourPackageService.getTourPackageById(id);
+
+        // Если пакет не найден, возвращаем страницу ошибки
+        if (tourPackage == null) {
+            return "error/404";
+        }
+
+        model.addAttribute("tourPackage", tourPackage);
+        // Если нужно, можете добавить логику получения отзывов и других данных
+        List<Review> reviews = reviewService.getReviewsByTourPackage(tourPackage);
+        model.addAttribute("reviews", reviews);
+
+        return "tour-package-details"; // Имя вашего шаблона
+    }
+
+
 }
 

@@ -26,6 +26,8 @@
                 <span th:text="${tourPackage.availability != null && tourPackage.availability ? 'Доступен' : 'Недоступен'}"></span>
             </p>
             <div class="tour-package-actions">
+                <!-- Кнопка "Подробнее" -->
+                <a th:href="'/tour-packages/details/' + ${tourPackage.id}" class="secondaryButton">Подробнее</a>
                 <!-- Форма добавления в корзину -->
                 <form action="/cart/add" method="post" style="display: inline;">
                     <input type="hidden" name="id" th:value="${tourPackage.id}">
