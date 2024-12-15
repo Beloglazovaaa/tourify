@@ -126,4 +126,14 @@ public class BookingService {
         return false;
     }
 
+    /**
+     * Получить бронирования по пользователю.
+     *
+     * @param user текущий пользователь
+     * @return список бронирований пользователя
+     */
+    public List<Booking> getBookingsByUser(User user) {
+        return bookingRepository.findByUser(user);
+    }
+
 }

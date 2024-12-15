@@ -30,6 +30,7 @@ public class SecurityConfig {
 
                         // Бронирования: создание только для пользователей, изменение для администраторов и агентов
                         .requestMatchers("/bookings/create").hasRole("USER") // Только для пользователей
+                        .requestMatchers("/bookings/my-bookings").hasRole("USER")
                         .requestMatchers("/bookings/**").hasAnyRole("ADMIN", "AGENT") // Для агентов и администраторов
 
                         // Отзывы: пользователи могут добавлять/редактировать, админ удаляет

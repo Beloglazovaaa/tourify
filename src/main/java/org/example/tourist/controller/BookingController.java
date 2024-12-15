@@ -62,11 +62,12 @@ public class BookingController {
         } else if (userDetails.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_USER"))) {
             redirectAttributes.addFlashAttribute("successMessage", "Бронирование успешно создано.");
-            return "redirect:/tour-packages";
+            return "redirect:/bookings/my-bookings";
         }
 
         return "redirect:/";
     }
+
 
     /**
      * Показать страницу с бронированиями.
@@ -159,4 +160,25 @@ public class BookingController {
 
         return "redirect:/bookings";
     }
+
+    /**
+     * Показать страницу с бронированиями текущего пользователя.
+     *
+     * @param model     модель для представления
+     * @param principal информация о текущем пользователе
+     * @return название представления "my-bookings"
+     */
+    @GetMapping("/my-bookings")
+    public String myBookingsPage(Model model, Principal principal) {
+        String username = principal.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        List<Booking> bookings = bookingService.getBookingsByUser(user);
+        model.addAttribute("bookings", bookings);
+        model.addAttribute("statuses", BookingStatus.values());
+        return "bookings/my-bookings";  // Указание на папку bookings
+    }
+
+
+
 }
