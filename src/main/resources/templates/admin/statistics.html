@@ -3,70 +3,140 @@
 <head>
   <meta charset="UTF-8">
   <title>Статистика сайта</title>
+
+  <!-- Подключение стилей -->
+  <link rel="stylesheet" th:href="@{/css/global.css}">
+
+  <!-- Подключение Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+<!-- Подключение заголовка -->
 <header th:replace="~{header.html :: header}"></header>
-<main>
-  <h2>Статистика сайта</h2>
+
+<main class="container">
+  <h2 class="page-title">Статистика сайта</h2>
 
   <!-- Общее количество пользователей -->
   <section>
-    <h3>Общее количество пользователей: <span th:text="${totalUsers}"></span></h3>
+    <h3>Общее количество пользователей: <span id="totalUsers"></span></h3>
   </section>
 
   <!-- Диаграмма: Количество пользователей по ролям -->
   <section>
     <h3>Количество пользователей по ролям</h3>
-    <canvas id="usersByRoleChart"></canvas>
+    <div class="chart-container">
+      <canvas id="usersByRoleChart"></canvas>
+    </div>
   </section>
 
   <!-- Диаграмма: Статистика бронирований -->
   <section>
     <h3>Статистика бронирований по месяцам</h3>
-    <canvas id="bookingStatsChart"></canvas>
+    <div class="chart-container">
+      <canvas id="bookingStatsChart"></canvas>
+    </div>
   </section>
 </main>
-<script th:inline="javascript">
-  /*<![CDATA[*/
-  const usersByRole = /*[[${usersByRole}]]*/ {};
-  const bookingStats = /*[[${bookingStats}]]*/ {};
 
-  // Пользователи по ролям
-  const roleLabels = Object.keys(usersByRole);
-  const roleData = Object.values(usersByRole);
+<!-- Подключение скриптов -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Получение общего количества пользователей
+    fetch('/api/admin/statistics/total-users')
+            .then(response => response.json())
+            .then(totalUsers => {
+              document.getElementById('totalUsers').textContent = totalUsers;
+            })
+            .catch(error => {
+              console.error('Ошибка при получении общего количества пользователей:', error);
+              document.getElementById('totalUsers').textContent = 'Ошибка загрузки';
+            });
 
-  const ctx1 = document.getElementById('usersByRoleChart').getContext('2d');
-  new Chart(ctx1, {
-    type: 'pie',
-    data: {
-      labels: roleLabels,
-      datasets: [{
-        label: 'Пользователи по ролям',
-        data: roleData,
-        backgroundColor: ['#36a2eb', '#ff6384', '#ffcd56']
-      }]
+    // Получение данных о пользователях по ролям
+    fetch('/api/admin/statistics/users-by-role')
+            .then(response => response.json())
+            .then(usersByRole => {
+              const roleLabels = Object.keys(usersByRole);
+              const roleData = Object.values(usersByRole);
+
+              const ctx1 = document.getElementById('usersByRoleChart').getContext('2d');
+              new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                  labels: roleLabels,
+                  datasets: [{
+                    label: 'Пользователи по ролям',
+                    data: roleData,
+                    backgroundColor: [
+                      '#36a2eb',
+                      '#ff6384',
+                      '#ffcd56',
+                      '#4bc0c0',
+                      '#9966ff',
+                      '#ff9f40'
+                    ]
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false
+                }
+              });
+            })
+            .catch(error => {
+              console.error('Ошибка при получении данных пользователей по ролям:', error);
+              // Можно добавить отображение сообщения об ошибке на странице
+            });
+
+    // Получение статистики бронирований
+    fetch('/api/admin/statistics/booking-stats')
+            .then(response => response.json())
+            .then(bookingStats => {
+              const bookingLabels = Object.keys(bookingStats).map(month => getMonthName(month));
+              const bookingData = Object.values(bookingStats);
+
+              const ctx2 = document.getElementById('bookingStatsChart').getContext('2d');
+              new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                  labels: bookingLabels,
+                  datasets: [{
+                    label: 'Количество бронирований',
+                    data: bookingData,
+                    backgroundColor: '#4caf50'
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      precision: 0
+                    }
+                  }
+                }
+              });
+            })
+            .catch(error => {
+              console.error('Ошибка при получении статистики бронирований:', error);
+              // Можно добавить отображение сообщения об ошибке на странице
+            });
+
+    // Функция для преобразования номера месяца в название
+    function getMonthName(monthNumber) {
+      const monthNames = [
+        "Январь", "Февраль", "Март", "Апрель",
+        "Май", "Июнь", "Июль", "Август",
+        "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+      ];
+      return monthNames[monthNumber - 1] || monthNumber;
     }
   });
-
-  // Статистика бронирований
-  const bookingLabels = Object.keys(bookingStats);
-  const bookingData = Object.values(bookingStats);
-
-  const ctx2 = document.getElementById('bookingStatsChart').getContext('2d');
-  new Chart(ctx2, {
-    type: 'bar',
-    data: {
-      labels: bookingLabels,
-      datasets: [{
-        label: 'Количество бронирований',
-        data: bookingData,
-        backgroundColor: '#4caf50'
-      }]
-    }
-  });
-  /*]]>*/
 </script>
+
+<!-- Подключение подвала -->
 <footer th:replace="~{footer.html :: footer}"></footer>
 </body>
 </html>

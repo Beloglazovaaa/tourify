@@ -45,5 +45,10 @@ public class AdminController {
         userService.deleteUser(userId);
         return "redirect:/admin/users";
     }
+
+    @GetMapping("/statistics")
+    public String statisticsPage() {
+        return "admin/statistics"; // Убедитесь, что файл находится по пути templates/admin/statistics.html
+    }
 }
 

@@ -164,3 +164,11 @@ footer {
     background: var(--hover-bg-color);
     color: var(--primary-color);
 }
+/* Контейнер для диаграмм */
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px; /* Максимальная ширина диаграммы */
+    height: 400px; /* Фиксированная высота диаграммы */
+    margin: 20px auto; /* Центрирование диаграммы с отступами сверху и снизу */
+}
