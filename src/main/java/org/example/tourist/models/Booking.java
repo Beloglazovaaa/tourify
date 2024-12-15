@@ -14,7 +14,12 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany
+    // Связь с пользователем, сделавшим бронирование
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "booking_tour_packages",
             joinColumns = @JoinColumn(name = "booking_id"),
@@ -33,7 +38,8 @@ public class Booking {
     // Конструкторы
     public Booking() {}
 
-    public Booking(List<TourPackage> tourPackages, Date bookingDate, Integer totalAmount, BookingStatus status) {
+    public Booking(User user, List<TourPackage> tourPackages, Date bookingDate, Integer totalAmount, BookingStatus status) {
+        this.user = user;
         this.tourPackages = tourPackages;
         this.bookingDate = bookingDate;
         this.totalAmount = totalAmount;
@@ -47,6 +53,14 @@ public class Booking {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public List<TourPackage> getTourPackages() {

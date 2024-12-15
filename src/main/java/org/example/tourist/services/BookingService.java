@@ -1,5 +1,5 @@
 package org.example.tourist.services;
-
+import org.example.tourist.models.User;
 import org.example.tourist.models.Booking;
 import org.example.tourist.BookingStatus;
 import org.example.tourist.models.TourPackage;
@@ -31,12 +31,13 @@ public class BookingService {
      * @param bookingDto DTO для создания бронирования
      * @throws RuntimeException если корзина пуста
      */
-    public void createBooking(BookingDto bookingDto) {
+    public void createBooking(BookingDto bookingDto, User user) {
         List<TourPackage> tourPackages = new ArrayList<>(cart.getCartItems());
         if (tourPackages.isEmpty()) {
             throw new RuntimeException("Корзина пуста! Невозможно создать бронирование.");
         }
         Booking booking = new Booking();
+        booking.setUser(user);
         booking.setTourPackages(tourPackages);
         booking.setBookingDate(new Date());
         booking.setTotalAmount(bookingDto.getTotalAmount());
@@ -44,6 +45,7 @@ public class BookingService {
         bookingRepository.save(booking);
         cart.clearCart();
     }
+
 
     /**
      * Получить все бронирования.

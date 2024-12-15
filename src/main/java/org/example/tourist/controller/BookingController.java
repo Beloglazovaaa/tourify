@@ -1,7 +1,8 @@
 package org.example.tourist.controller;
-
+import org.example.tourist.models.User;
 import org.example.tourist.models.Booking;
 import org.example.tourist.BookingStatus;
+import org.example.tourist.repositories.UserRepository;
 import org.example.tourist.services.BookingService;
 import org.example.tourist.BookingDto;
 import org.springframework.security.core.Authentication;
@@ -19,9 +20,11 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final UserRepository userRepository;
 
-    public BookingController(BookingService bookingService) {
+    public BookingController(BookingService bookingService, UserRepository userRepository) {
         this.bookingService = bookingService;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -32,9 +35,22 @@ public class BookingController {
      * @param redirectAttributes атрибуты для перенаправления
      * @return перенаправление в зависимости от роли пользователя
      */
+    /**
+     * Создать новое бронирование.
+     *
+     * @param bookingDto          DTO для создания бронирования
+     * @param principal           информация о текущем пользователе
+     * @param redirectAttributes  атрибуты для перенаправления
+     * @return перенаправление в зависимости от роли пользователя
+     */
     @PostMapping("/create")
     public String createBooking(@ModelAttribute BookingDto bookingDto, Principal principal, RedirectAttributes redirectAttributes) {
-        bookingService.createBooking(bookingDto);
+        // Извлекаем имя пользователя из Principal
+        String username = principal.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+
+        bookingService.createBooking(bookingDto, user);
 
         Authentication authentication = (Authentication) principal;
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
