@@ -1,4 +1,3 @@
-// AdminController.java
 package org.example.tourist.controller;
 
 import org.example.tourist.models.User;
@@ -21,17 +20,16 @@ public class AdminController {
     }
 
     /**
-     * Отобразить страницу управления пользователями.
+     * Страница управления пользователями.
      */
     @GetMapping("/users")
-    public String manageUsersPage(Model model) {
+    public String getManageUsersPage(Model model) {
         model.addAttribute("users", userService.getAllUsers());
         return "admin/manage-users";
     }
 
-
     /**
-     * Обновить роль пользователя.
+     * Обновление роли пользователя.
      */
     @PostMapping("/users/update-role")
     public String updateUserRole(@RequestParam Long userId, @RequestParam String newRole) {
@@ -40,7 +38,7 @@ public class AdminController {
     }
 
     /**
-     * Удалить пользователя.
+     * Удаление пользователя.
      */
     @PostMapping("/users/delete")
     public String deleteUser(@RequestParam Long userId) {
@@ -48,3 +46,4 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 }
+

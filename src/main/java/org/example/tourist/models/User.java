@@ -16,7 +16,7 @@ public class User {
 
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -24,7 +24,6 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    // Конструкторы
     public User() {}
 
     public User(String username, String password) {
@@ -32,7 +31,6 @@ public class User {
         this.password = password;
     }
 
-    // Геттеры и Сеттеры
     public Long getId() {
         return id;
     }

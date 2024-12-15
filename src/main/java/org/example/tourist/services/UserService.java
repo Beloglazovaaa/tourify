@@ -1,4 +1,3 @@
-// UserService.java
 package org.example.tourist.services;
 
 import org.example.tourist.models.Role;
@@ -9,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -42,46 +42,54 @@ public class UserService {
         Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new IllegalArgumentException("Роль не найдена: " + roleName));
 
-        user.setRoles(Set.of(role));
+        // Используем изменяемый набор для ролей
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
+
         userRepository.save(user);
     }
 
+
     /**
-     * Получить всех пользователей.
+     * Получение всех пользователей.
      */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
     /**
-     * Обновить роль пользователя.
+     * Обновление роли пользователя.
      */
     @Transactional
-    public void updateUserRole(Long userId, String newRole) {
+    public void updateUserRole(Long userId, String newRoleName) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Пользователь не найден"));
 
-        Role role = roleRepository.findByName(newRole)
-                .orElseThrow(() -> new IllegalArgumentException("Роль не найдена: " + newRole));
+        Role role = roleRepository.findByName(newRoleName)
+                .orElseThrow(() -> new IllegalArgumentException("Роль не найдена: " + newRoleName));
 
-        user.setRoles(Set.of(role));
+        // Обновляем существующую изменяемую коллекцию ролей
+        user.getRoles().clear();
+        user.getRoles().add(role);
+
+        // Альтернативный вариант:
+        // Set<Role> roles = new HashSet<>();
+        // roles.add(role);
+        // user.setRoles(roles);
+
         userRepository.save(user);
     }
 
+
     /**
-     * Удалить пользователя по ID.
+     * Удаление пользователя.
      */
     @Transactional
     public void deleteUser(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new IllegalArgumentException("Пользователь не найден");
-        }
         userRepository.deleteById(userId);
     }
 
-    /**
-     * Найти пользователя по имени.
-     */
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
