@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Статистика сайта</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header th:replace="~{header.html :: header}"></header>
+<main>
+  <h2>Статистика сайта</h2>
+
+  <!-- Общее количество пользователей -->
+  <section>
+    <h3>Общее количество пользователей: <span th:text="${totalUsers}"></span></h3>
+  </section>
+
+  <!-- Диаграмма: Количество пользователей по ролям -->
+  <section>
+    <h3>Количество пользователей по ролям</h3>
+    <canvas id="usersByRoleChart"></canvas>
+  </section>
+
+  <!-- Диаграмма: Статистика бронирований -->
+  <section>
+    <h3>Статистика бронирований по месяцам</h3>
+    <canvas id="bookingStatsChart"></canvas>
+  </section>
+</main>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const usersByRole = /*[[${usersByRole}]]*/ {};
+  const bookingStats = /*[[${bookingStats}]]*/ {};
+
+  // Пользователи по ролям
+  const roleLabels = Object.keys(usersByRole);
+  const roleData = Object.values(usersByRole);
+
+  const ctx1 = document.getElementById('usersByRoleChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'pie',
+    data: {
+      labels: roleLabels,
+      datasets: [{
+        label: 'Пользователи по ролям',
+        data: roleData,
+        backgroundColor: ['#36a2eb', '#ff6384', '#ffcd56']
+      }]
+    }
+  });
+
+  // Статистика бронирований
+  const bookingLabels = Object.keys(bookingStats);
+  const bookingData = Object.values(bookingStats);
+
+  const ctx2 = document.getElementById('bookingStatsChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: bookingLabels,
+      datasets: [{
+        label: 'Количество бронирований',
+        data: bookingData,
+        backgroundColor: '#4caf50'
+      }]
+    }
+  });
+  /*]]>*/
+</script>
+<footer th:replace="~{footer.html :: footer}"></footer>
+</body>
+</html>
