@@ -31,7 +31,7 @@ public class BookingService {
      * @param bookingDto DTO для создания бронирования
      * @throws RuntimeException если корзина пуста
      */
-    public void createBooking(BookingDto bookingDto, User user) {
+    public Booking createBooking(BookingDto bookingDto, User user) {
         List<TourPackage> tourPackages = new ArrayList<>(cart.getCartItems());
         if (tourPackages.isEmpty()) {
             throw new RuntimeException("Корзина пуста! Невозможно создать бронирование.");
@@ -41,10 +41,12 @@ public class BookingService {
         booking.setTourPackages(tourPackages);
         booking.setBookingDate(new Date());
         booking.setTotalAmount(bookingDto.getTotalAmount());
-        booking.setStatus(BookingStatus.CREATED); // Предполагаем, что BookingStatus.CREATED соответствует OrderStatus.СОЗДАН
+        booking.setStatus(BookingStatus.CREATED);
         bookingRepository.save(booking);
         cart.clearCart();
+        return booking; // Возвращаем созданный объект
     }
+
 
 
     /**

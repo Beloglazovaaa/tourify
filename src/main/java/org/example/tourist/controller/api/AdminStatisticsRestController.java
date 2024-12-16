@@ -1,4 +1,4 @@
-package org.example.tourist.controller;
+package org.example.tourist.controller.api;
 
 import org.example.tourist.services.StatisticsService;
 import org.springframework.http.ResponseEntity;
