@@ -18,18 +18,26 @@
 
     <form class="searchForm" action="/tour-packages/search" method="get">
         <input type="text" name="name" placeholder="Поиск по туристическим пакетам">
+        <select name="sort">
+            <option value="name">По названию</option>
+            <option value="price">По цене</option>
+            <option value="availability">По доступности</option>
+        </select>
+        <select name="direction">
+            <option value="asc">По возрастанию</option>
+            <option value="desc">По убыванию</option>
+        </select>
         <button type="submit">Поиск</button>
     </form>
 
     <div class="tour-packages-grid">
         <div class="tour-package-item" th:each="tourPackage : ${tourPackages}">
             <img th:src="${tourPackage.imageUrl != null ? tourPackage.imageUrl : '/images/default.png'}" alt="Изображение туристического пакета"/>
-            <h3 class="title" th:text="${tourPackage.name}">Название пакета</h3>
-            <p class="description" th:text="${tourPackage.description}">Описание пакета</p>
-            <p><span th:text="${tourPackage.price}">Цена</span> ₽</p>
+            <h3 th:text="${tourPackage.name}">Название пакета</h3>
+            <p th:text="${tourPackage.price} + ' ₽'">Цена</p>
             <p>
                 <strong>Статус:</strong>
-                <span th:text="${tourPackage.availability != null && tourPackage.availability ? 'Доступен' : 'Недоступен'}"></span>
+                <span th:text="${tourPackage.availability ? 'Доступен' : 'Недоступен'}"></span>
             </p>
             <div class="tour-package-actions">
                 <!-- Кнопка "Подробнее" всегда доступна -->

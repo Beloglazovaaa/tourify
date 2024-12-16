@@ -68,18 +68,24 @@ public class TourPackageController {
      *
      * @param name    название для поиска
      * @param model   модель для представления
-     * @param principal текущий аутентифицированный пользователь
+     * @param sort текущий аутентифицированный пользователь
      * @return название представления "tour-packages" с результатами поиска
      */
     @GetMapping("/search")
-    public String searchTourPackages(@RequestParam String name, Model model, Principal principal) {
-        List<TourPackage> items = tourPackageService.searchTourPackages(name);
+    public String searchTourPackages(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false, defaultValue = "name") String sort,
+            @RequestParam(required = false, defaultValue = "asc") String direction,
+            Model model) {
+
+        List<TourPackage> items = tourPackageService.searchTourPackages(name, sort, direction);
         model.addAttribute("tourPackages", items);
         model.addAttribute("cartItems", cart.getCartItems());
         model.addAttribute("totalPrice", cart.getTotalPrice());
         model.addAttribute("pageTitle", "Поиск Туристических Пакетов | Tourify");
         return "tour-packages";
     }
+
 
     /**
      * Показать страницу создания нового туристического пакета.

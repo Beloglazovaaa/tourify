@@ -1,6 +1,7 @@
 package org.example.tourist.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Sort;
 import jakarta.transaction.Transactional;
 import org.example.tourist.models.TourPackage;
 import org.example.tourist.repositories.BookingRepository;
@@ -86,9 +87,17 @@ public class TourPackageService {
      * @param name название для поиска
      * @return список пакетов, содержащих указанное название
      */
-    public List<TourPackage> searchTourPackages(String name) {
-        return tourPackageRepository.findByNameContaining(name);
+
+    public List<TourPackage> searchTourPackages(String name, String sort, String direction) {
+        Sort sorting = direction.equalsIgnoreCase("asc") ? Sort.by(sort).ascending() : Sort.by(sort).descending();
+
+        if (name != null && !name.isEmpty()) {
+            return tourPackageRepository.findByNameContainingIgnoreCase(name, sorting);
+        } else {
+            return tourPackageRepository.findAll(sorting);
+        }
     }
+
 
 
     @Transactional

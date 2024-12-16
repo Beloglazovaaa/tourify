@@ -34,9 +34,13 @@ public class TourPackageRestController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<TourPackage>> searchTourPackages(@RequestParam String name) {
-        return ResponseEntity.ok(tourPackageService.searchTourPackages(name));
+    public ResponseEntity<List<TourPackage>> searchTourPackages(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "name") String sort,  // Значение по умолчанию "name"
+            @RequestParam(defaultValue = "asc") String direction) {  // Значение по умолчанию "asc"
+        return ResponseEntity.ok(tourPackageService.searchTourPackages(name, sort, direction));
     }
+
 
     @PostMapping
     public ResponseEntity<Void> createTourPackage(@RequestBody TourPackage tourPackage, Principal principal) {
