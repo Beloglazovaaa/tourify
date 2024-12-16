@@ -1,6 +1,7 @@
 package org.example.tourist.models;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "tour_packages")
@@ -17,24 +18,25 @@ public class TourPackage {
     private Boolean availability;
     private Integer duration;
 
-    // Конструкторы
+    // Связь с несколькими бронированиями
+    @OneToMany(mappedBy = "tourPackages", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Booking> bookings;  // Список бронирований
+
     public TourPackage() {}
 
-    public TourPackage(String name, String description, String imageUrl, Integer price, Boolean availability) {
+    public TourPackage(String name, String description, String imageUrl, Integer price, Boolean availability, Integer duration) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
         this.price = price;
         this.availability = availability;
         this.duration = duration;
-        this.price = price;
     }
 
     // Геттеры и Сеттеры
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -47,46 +49,32 @@ public class TourPackage {
         this.name = name;
     }
 
+    // Остальные геттеры и сеттеры
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public void setDescription(String description) {this.description = description;}
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
+    public String getImageUrl() {return imageUrl;}
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+    public void setImageUrl(String imageUrl) {this.imageUrl = imageUrl;}
 
-    public Integer getPrice() {
-        return price;
-    }
+    public Integer getPrice() {return price;}
 
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
+    public void setPrice(Integer price) {this.price = price;}
 
-    public Boolean getAvailability() {
-        return availability;
-    }
+    public Boolean getAvailability() {return availability;}
 
-    public void setAvailability(Boolean availability) {
-        this.availability = availability;
-    }
+    public void setAvailability(Boolean availability) {this.availability = availability;}
 
-    public Integer getDuration() {
-        return duration;
-    }
+    public Integer getDuration() {return duration;}
 
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
+    public void setDuration(Integer duration) {this.duration = duration;}
+
+    public List<Booking> getBookings() {return bookings;}
+
+    public void setBookings(List<Booking> bookings) {this.bookings = bookings;}
 
 }
-
 

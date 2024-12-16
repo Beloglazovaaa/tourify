@@ -1,4 +1,7 @@
 package org.example.tourist.services;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.example.tourist.models.User;
 import org.example.tourist.models.Booking;
 import org.example.tourist.BookingStatus;
@@ -10,11 +13,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
+
+    // Внедрение EntityManager
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final BookingRepository bookingRepository;
     private final Cart cart;
@@ -31,21 +40,36 @@ public class BookingService {
      * @param bookingDto DTO для создания бронирования
      * @throws RuntimeException если корзина пуста
      */
+    @Transactional
     public Booking createBooking(BookingDto bookingDto, User user) {
         List<TourPackage> tourPackages = new ArrayList<>(cart.getCartItems());
+
         if (tourPackages.isEmpty()) {
             throw new RuntimeException("Корзина пуста! Невозможно создать бронирование.");
         }
+
+        // Применяем merge, чтобы все объекты TourPackage были отслеживаемыми сессией
+        tourPackages = tourPackages.stream()
+                .map(t -> entityManager.merge(t))  // Использование merge для обновления отсоединённых объектов
+                .collect(Collectors.toList());
+
+        // Создаем новый объект бронирования
         Booking booking = new Booking();
         booking.setUser(user);
-        booking.setTourPackages(tourPackages);
+        booking.setTourPackages(tourPackages);  // Устанавливаем список туров
         booking.setBookingDate(new Date());
         booking.setTotalAmount(bookingDto.getTotalAmount());
         booking.setStatus(BookingStatus.CREATED);
+
+        // Сохраняем бронирование
         bookingRepository.save(booking);
+
+        // Очищаем корзину
         cart.clearCart();
-        return booking; // Возвращаем созданный объект
+
+        return booking;
     }
+
 
 
 
@@ -120,13 +144,16 @@ public class BookingService {
      * @param bookingId ID бронирования
      * @return true, если удаление успешно, иначе false
      */
+    @Transactional
     public boolean deleteBooking(Long bookingId) {
-        if (bookingRepository.existsById(bookingId)) {
-            bookingRepository.deleteById(bookingId);
-            return true;
-        }
-        return false;
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Бронирование не найдено"));
+        // Очистка связи с турпакетами
+        booking.getTourPackages().clear();
+        bookingRepository.delete(booking);
+        return true;
     }
+
 
     /**
      * Получить бронирования по пользователю.

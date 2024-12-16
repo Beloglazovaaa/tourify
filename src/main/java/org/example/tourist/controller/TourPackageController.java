@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/tour-packages")
@@ -41,15 +43,24 @@ public class TourPackageController {
      * @param principal текущий аутентифицированный пользователь
      * @return название представления "tour-packages"
      */
+
     @GetMapping
     public String tourPackagesPage(Model model, Principal principal) {
-        // Проверка прав доступа при необходимости (опционально)
-        model.addAttribute("tourPackages", tourPackageService.getAllTourPackages());
+        List<TourPackage> tourPackages = tourPackageService.getAllTourPackages();
+        Map<Long, Boolean> canDeleteMap = tourPackages.stream()
+                .collect(Collectors.toMap(TourPackage::getId,
+                        tourPackage -> tourPackageService.canDeleteTourPackage(tourPackage.getId())));
+
+        // Добавляем данные корзины
         model.addAttribute("cartItems", cart.getCartItems());
         model.addAttribute("totalPrice", cart.getTotalPrice());
-        model.addAttribute("pageTitle", "Туристические Пакеты | Tourify");
+        model.addAttribute("tourPackages", tourPackages);
+        model.addAttribute("canDeleteMap", canDeleteMap);
         return "tour-packages";
     }
+
+
+
 
     /**
      * Поиск туристических пакетов по названию.
@@ -113,13 +124,22 @@ public class TourPackageController {
      * @return перенаправление на страницу туристических пакетов или на страницу доступа запрещен
      */
     @PostMapping("/delete/{id}")
-    public String deleteTourPackage(@PathVariable Long id, Principal principal) {
-        if (hasRole(principal, "ROLE_ADMIN")) { // Проверяем, есть ли у пользователя роль администратора
-            tourPackageService.deleteTourPackage(id); // Удаляем пакет из базы данных через сервис
-            return "redirect:/tour-packages"; // Возвращаемся на страницу с туристическими пакетами
+    public String deleteTourPackage(@PathVariable Long id, Principal principal, Model model) {
+        if (!hasRole(principal, "ROLE_ADMIN")) {  // Проверка роли
+            return "redirect:/access-denied"; // Если нет нужной роли
         }
-        return "redirect:/access-denied"; // Перенаправляем на страницу "Доступ запрещён"
+
+        boolean canDelete = tourPackageService.canDeleteTourPackage(id); // Проверка на активные бронирования
+        if (canDelete) {
+            tourPackageService.deleteTourPackage(id);
+            return "redirect:/tour-packages"; // После удаления возвращаем на страницу пакетов
+        } else {
+            model.addAttribute("errorMessage", "Невозможно удалить турпакет, так как для него есть активные бронирования.");
+            return "tour-packages"; // Если нельзя удалить, возвращаем на страницу с ошибкой
+        }
     }
+
+
 
 
     /**

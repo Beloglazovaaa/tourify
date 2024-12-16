@@ -50,12 +50,13 @@
                     Редактировать
                 </a>
 
-                <!-- Удалить доступно только администратору -->
                 <form sec:authorize="hasRole('ROLE_ADMIN')"
                       th:action="@{'/tour-packages/delete/' + ${tourPackage.id}}"
                       method="post"
                       style="display: inline;">
-                    <button class="deleteButton" type="submit">Удалить</button>
+                    <button class="deleteButton"
+                            th:disabled="${!canDeleteMap[tourPackage.id]}"
+                            type="submit">Удалить</button>
                 </form>
             </div>
         </div>

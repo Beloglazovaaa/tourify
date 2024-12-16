@@ -1,8 +1,11 @@
 package org.example.tourist.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.example.tourist.models.TourPackage;
+import org.example.tourist.repositories.BookingRepository;
 import org.example.tourist.repositories.TourPackageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +14,12 @@ import java.util.List;
 public class TourPackageService {
 
     private final TourPackageRepository tourPackageRepository;
+    private final BookingRepository bookingRepository;
 
-    public TourPackageService(TourPackageRepository tourPackageRepository) {
+    @Autowired
+    public TourPackageService(TourPackageRepository tourPackageRepository, BookingRepository bookingRepository) {
         this.tourPackageRepository = tourPackageRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     /**
@@ -84,16 +90,20 @@ public class TourPackageService {
         return tourPackageRepository.findByNameContaining(name);
     }
 
-    /**
-     * Удалить туристический пакет по ID.
-     *
-     * @param id ID пакета
-     */
-    public void deleteTourPackage(Long id) {
-        if (tourPackageRepository.existsById(id)) {
-            tourPackageRepository.deleteById(id); // Удаление пакета
+
+    @Transactional
+    public boolean canDeleteTourPackage(Long id) {
+        return bookingRepository.countBookingsByTourPackageId(id) == 0;
+    }
+
+    @Transactional
+    public void deleteTourPackage(Long tourPackageId) {
+        if (canDeleteTourPackage(tourPackageId)) {
+            // Удаляем турпакет
+            tourPackageRepository.deleteById(tourPackageId);
         } else {
-            throw new EntityNotFoundException("Туристический пакет с ID " + id + " не найден");
+            throw new IllegalStateException("Невозможно удалить турпакет, так как для него есть активные бронирования.");
         }
     }
+
 }

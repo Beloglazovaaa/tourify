@@ -5,7 +5,6 @@ import org.example.tourist.BookingStatus;
 
 import java.util.Date;
 import java.util.List;
-
 @Entity
 @Table(name = "bookings")
 public class Booking {
@@ -14,18 +13,19 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Связь с пользователем, сделавшим бронирование
+    // Связь с пользователем
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    // Связь с несколькими турами
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "booking_tour_packages",
             joinColumns = @JoinColumn(name = "booking_id"),
             inverseJoinColumns = @JoinColumn(name = "tour_package_id")
     )
-    private List<TourPackage> tourPackages;
+    private List<TourPackage> tourPackages;  // Список туров
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date bookingDate;
@@ -34,65 +34,31 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
-
-    // Конструкторы
     public Booking() {}
 
     public Booking(User user, List<TourPackage> tourPackages, Date bookingDate, Integer totalAmount, BookingStatus status) {
         this.user = user;
-        this.tourPackages = tourPackages;
+        this.tourPackages = tourPackages;  // Используем список туров
         this.bookingDate = bookingDate;
         this.totalAmount = totalAmount;
         this.status = status;
     }
 
-    // Геттеры и Сеттеры
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
-    public User getUser() {
-        return user;
-    }
+    public List<TourPackage> getTourPackages() { return tourPackages; }
+    public void setTourPackages(List<TourPackage> tourPackages) { this.tourPackages = tourPackages; }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public Date getBookingDate() { return bookingDate; }
+    public void setBookingDate(Date bookingDate) { this.bookingDate = bookingDate; }
 
-    public List<TourPackage> getTourPackages() {
-        return tourPackages;
-    }
+    public Integer getTotalAmount() { return totalAmount; }
+    public void setTotalAmount(Integer totalAmount) { this.totalAmount = totalAmount; }
 
-    public void setTourPackages(List<TourPackage> tourPackages) {
-        this.tourPackages = tourPackages;
-    }
-
-    public Date getBookingDate() {
-        return bookingDate;
-    }
-
-    public void setBookingDate(Date bookingDate) {
-        this.bookingDate = bookingDate;
-    }
-
-    public Integer getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(Integer totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public BookingStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(BookingStatus status) {
-        this.status = status;
-    }
+    public BookingStatus getStatus() { return status; }
+    public void setStatus(BookingStatus status) { this.status = status; }
 }
-

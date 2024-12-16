@@ -19,4 +19,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT MONTH(b.bookingDate), COUNT(b) FROM Booking b GROUP BY MONTH(b.bookingDate)")
     List<Object[]> countBookingsPerMonth();
+
+
+    // Метод для подсчета бронирований для конкретного турпакета
+    @Query("SELECT COUNT(b) FROM Booking b JOIN b.tourPackages tp WHERE tp.id = :tourPackageId")
+    long countBookingsByTourPackageId(Long tourPackageId);
 }
