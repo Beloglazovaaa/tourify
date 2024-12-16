@@ -1,0 +1,91 @@
+/* Основной контейнер */
+.my-bookings-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Заголовок */
+.page-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center; /* Выравниваем по центру */
+    margin-bottom: 30px;
+    color: var(--primary-color, #333);
+}
+
+/* Таблица бронирований */
+.bookings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bookings-table th, .bookings-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.bookings-table th {
+    background-color: var(--primary-color, #00a9e0);
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.bookings-table td {
+    font-size: 1rem;
+    color: var(--text-color, #333);
+}
+
+/* Чередование строк */
+.bookings-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.bookings-table tbody tr:nth-child(even) {
+    background-color: #fff;
+}
+
+/* Стили для статусов */
+.status {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.status.created {
+    color: var(--warning-color, #ff9800);
+}
+
+.status.cancelled {
+    color: var(--error-color, #f44336);
+}
+
+.status.confirmed {
+    color: var(--success-color, #4caf50);
+}
+
+/* Нет бронирований */
+.no-bookings {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-color, #777);
+    padding: 20px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .bookings-table th, .bookings-table td {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+}

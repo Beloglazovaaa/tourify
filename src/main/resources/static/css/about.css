@@ -10,11 +10,12 @@
 }
 
 .author-photo {
-    width: 200px;
-    height: 200px;
+    width: 150px; /* Уменьшаем ширину */
+    height: 150px; /* Уменьшаем высоту */
     border-radius: 50%;
     object-fit: cover;
 }
+
 
 .about-author-text {
     flex: 1;

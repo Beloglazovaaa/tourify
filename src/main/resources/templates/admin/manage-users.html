@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{head.html :: head}"></head>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Управление пользователями</title>
+  <link th:href="@{/css/manage-users.css}" rel="stylesheet">
+  <link th:href="@{/css/header.css}" rel="stylesheet">
+  <link th:href="@{/css/global.css}" rel="stylesheet">
+</head>
 <body>
 <header th:replace="~{header.html :: header}"></header>
 <main class="root">

@@ -47,7 +47,7 @@ public class TourPackageController {
         model.addAttribute("tourPackages", tourPackageService.getAllTourPackages());
         model.addAttribute("cartItems", cart.getCartItems());
         model.addAttribute("totalPrice", cart.getTotalPrice());
-        model.addAttribute("pageTitle", "Туристические Пакеты | YourAgencyName");
+        model.addAttribute("pageTitle", "Туристические Пакеты | Tourify");
         return "tour-packages";
     }
 
@@ -66,7 +66,7 @@ public class TourPackageController {
         model.addAttribute("tourPackages", items);
         model.addAttribute("cartItems", cart.getCartItems());
         model.addAttribute("totalPrice", cart.getTotalPrice());
-        model.addAttribute("pageTitle", "Поиск Туристических Пакетов | YourAgencyName");
+        model.addAttribute("pageTitle", "Поиск Туристических Пакетов | Tourify");
         return "tour-packages";
     }
 

@@ -16,7 +16,7 @@ public class HomeController {
     @GetMapping("/about")
     public String aboutPage(Model model) {
         // Добавляем данные в модель, если нужно
-        model.addAttribute("pageTitle", "Об авторе | YourAgencyName");
+        model.addAttribute("pageTitle", "Об авторе | Tourify");
         return "about";
     }
 }
