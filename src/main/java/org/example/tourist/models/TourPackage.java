@@ -18,9 +18,11 @@ public class TourPackage {
     private Boolean availability;
     private Integer duration;
 
-    // Связь с несколькими бронированиями
+    @OneToMany(mappedBy = "tourPackage", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews;
+
     @OneToMany(mappedBy = "tourPackages", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Booking> bookings;  // Список бронирований
+    private List<Booking> bookings;
 
     public TourPackage() {}
 
@@ -32,6 +34,7 @@ public class TourPackage {
         this.availability = availability;
         this.duration = duration;
     }
+
 
     // Геттеры и Сеттеры
     public Long getId() {
@@ -75,6 +78,10 @@ public class TourPackage {
     public List<Booking> getBookings() {return bookings;}
 
     public void setBookings(List<Booking> bookings) {this.bookings = bookings;}
+
+    public List<Review> getReviews() {return reviews;}
+
+    public void setReviews(List<Review> reviews) {this.reviews = reviews;}
 
 }
 
