@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Статистика сайта</title>
+
+  <!-- Подключение стилей -->
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/header.css">
+  <link rel="stylesheet" href="/css/tour-packages.css">
+  <link rel="stylesheet" href="/css/about.css">
+  <link rel="stylesheet" href="/css/statistics.css"> <!-- Новый файл с дополнительными стилями -->
+
+  <!-- Подключение Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<!-- Подключение заголовка -->
+<header th:replace="~{header.html :: header}"></header>
+
+<main class="container statistics-page">
+  <h2 class="page-title">Статистика сайта</h2>
+
+  <section class="statistics-section">
+    <div class="statistics-item">
+      <h3>Общее количество пользователей:</h3>
+      <div class="stats-value-box">
+        <span id="totalUsers" class="stats-value">...</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="statistics-charts">
+    <div class="chart-block">
+      <h3>Количество пользователей по ролям</h3>
+      <div class="chart-container">
+        <canvas id="usersByRoleChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-block">
+      <h3>Статистика бронирований по месяцам</h3>
+      <div class="chart-container">
+        <canvas id="bookingStatsChart"></canvas>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Подключение скриптов -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Получение общего количества пользователей
+    fetch('/api/admin/statistics/total-users')
+            .then(response => response.json())
+            .then(totalUsers => {
+              document.getElementById('totalUsers').textContent = totalUsers;
+            })
+            .catch(error => {
+              console.error('Ошибка при получении общего количества пользователей:', error);
+              document.getElementById('totalUsers').textContent = 'Ошибка загрузки';
+            });
+
+    // Получение данных о пользователях по ролям
+    fetch('/api/admin/statistics/users-by-role')
+            .then(response => response.json())
+            .then(usersByRole => {
+              const roleLabels = Object.keys(usersByRole);
+              const roleData = Object.values(usersByRole);
+
+              const ctx1 = document.getElementById('usersByRoleChart').getContext('2d');
+              new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                  labels: roleLabels,
+                  datasets: [{
+                    label: 'Пользователи по ролям',
+                    data: roleData,
+                    backgroundColor: [
+                      '#36a2eb',
+                      '#ff6384',
+                      '#ffcd56',
+                      '#4bc0c0',
+                      '#9966ff',
+                      '#ff9f40'
+                    ]
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false
+                }
+              });
+            })
+            .catch(error => {
+              console.error('Ошибка при получении данных пользователей по ролям:', error);
+            });
+
+    // Получение статистики бронирований
+    fetch('/api/admin/statistics/booking-stats')
+            .then(response => response.json())
+            .then(bookingStats => {
+              const bookingLabels = Object.keys(bookingStats).map(month => getMonthName(month));
+              const bookingData = Object.values(bookingStats);
+
+              const ctx2 = document.getElementById('bookingStatsChart').getContext('2d');
+              new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                  labels: bookingLabels,
+                  datasets: [{
+                    label: 'Количество бронирований',
+                    data: bookingData,
+                    backgroundColor: '#4caf50',
+                    barThickness: 30 // Увеличиваем ширину столбцов
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
+                      beginAtZero: true,
+                      ticks: {
+                        maxRotation: 0,
+                        minRotation: 0
+                      }
+                    },
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        stepSize: 1, // Шаг делений равен 1
+                        callback: function(value) {
+                          return Number.isInteger(value) ? value : null; // Отображать только целые значения
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+            })
+            .catch(error => {
+              console.error('Ошибка при получении статистики бронирований:', error);
+            });
+
+
+
+    // Функция для преобразования номера месяца в название
+    function getMonthName(monthNumber) {
+      const monthNames = [
+        "Январь", "Февраль", "Март", "Апрель",
+        "Май", "Июнь", "Июль", "Август",
+        "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
+      ];
+      return monthNames[monthNumber - 1] || monthNumber;
+    }
+  });
+</script>
+
+<!-- Подключение подвала -->
+<footer th:replace="~{footer.html :: footer}"></footer>
+</body>
+</html>

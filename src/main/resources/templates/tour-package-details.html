@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{head.html :: head}"></head>
+
+<body>
+<header th:replace="~{header.html :: header}"></header>
+<style>
+    .root {
+        margin: auto;
+    }
+</style>
+
+<main class="root">
+    <div class="tour-package-details-container">
+        <div class="tour-package-detail">
+            <h2 th:text="${tourPackage.name}">Название пакета</h2>
+            <img th:src="${tourPackage.imageUrl != null ? tourPackage.imageUrl : '/images/default.png'}"
+                 alt="Изображение туристического пакета"/>
+            <!-- Отображение длинного текста описания -->
+        </div>
+
+        <div class="tour-package-reviews">
+            <!-- Отзывы о турпакете -->
+            <p class="description-text" th:text="${tourPackage.description}">Описание пакета</p>
+            <p><strong>Цена:</strong> <span th:text="${tourPackage.price}">Цена</span> ₽</p>
+            <p><strong>Продолжительность:</strong> <span th:text="${tourPackage.duration}">Продолжительность</span></p>
+            <p>
+                <strong>Статус:</strong>
+                <span th:text="${tourPackage.availability != null && tourPackage.availability ? 'Доступен' : 'Недоступен'}"></span>
+            </p>
+
+            <!-- Форма для добавления в корзину -->
+            <form action="/cart/add" method="post" style="display: inline;">
+                <input type="hidden" name="id" th:value="${tourPackage.id}">
+                <button class="addToCartButton"
+                        th:disabled="${tourPackage.availability == null or !tourPackage.availability}"
+                        type="submit">Добавить в корзину
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="reviews-section">
+        <h3>Отзывы</h3>
+        <div th:if="${reviews != null and reviews.size() > 0}">
+            <ul>
+                <li th:each="review : ${reviews}">
+                    <p>
+                        <strong th:text="${review.user.username}">Имя пользователя</strong>
+                        оставил отзыв с рейтингом:
+                        <span th:text="${review.rating}">5</span>
+                    </p>
+                    <p th:text="${review.comment}">Комментарий</p>
+                    <p><em th:text="${#temporals.format(review.reviewDate,'dd.MM.yyyy HH:mm')}">Дата отзыва</em></p>
+                    <hr/>
+                </li>
+            </ul>
+        </div>
+        <p th:if="${reviews == null or reviews.size() == 0}">Нет отзывов</p>
+    </div>
+
+    <!-- Форма добавления отзыва, доступна только авторизованным пользователям -->
+    <sec:authorize access="isAuthenticated()">
+        <div class="add-review-form">
+            <h3>Оставить отзыв</h3>
+            <form th:action="@{/tour-packages/addReview}" method="post">
+                <input type="hidden" name="tourPackageId" th:value="${tourPackage.id}">
+                <div class="mb-3">
+                    <label for="rating" class="form-label">Рейтинг</label>
+                    <select name="rating" id="rating" class="form-select" required>
+                        <option value="5">5 - Отлично</option>
+                        <option value="4">4 - Хорошо</option>
+                        <option value="3">3 - Нормально</option>
+                        <option value="2">2 - Плохо</option>
+                        <option value="1">1 - Ужасно</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="comment" class="form-label">Комментарий</label>
+                    <textarea name="comment" id="comment" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+            </form>
+        </div>
+    </sec:authorize>
+
+    <!-- Если пользователь не авторизован, предложить войти в систему -->
+    <sec:authorize access="isAnonymous()">
+        <p style="margin-top: 15px;">Чтобы оставить отзыв, <a th:href="@{/login}">войдите в систему</a>.</p>
+    </sec:authorize>
+</main>
+
+<footer th:replace="~{footer.html :: footer}"></footer>
+
+</body>
+</html>

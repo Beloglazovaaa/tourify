@@ -1,0 +1,103 @@
+/* Основной контейнер */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Сообщение об успехе */
+.alert-success {
+    background-color: #eafaf1;
+    color: #4caf50;
+    border: 1px solid #d4e8dc;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+/* Таблица бронирований */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.table th, .table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    color: var(--text-color, #333);
+}
+
+.table th {
+    background-color: var(--primary-color, #00a9e0);
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.table tbody tr:hover {
+    background-color: #f4f4f4;
+}
+
+/* Статусы */
+.form-select {
+    padding: 5px 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+    margin-right: 10px;
+}
+
+/* Чередование строк */
+.table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #fff;
+}
+
+/* Сообщение "Нет бронирований" */
+.text-center {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-color, #777);
+    padding: 20px;
+}
+
+/* Кнопки действий */
+.btn {
+    display: inline-block;
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color, #00a9e0);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color-dark, #008bbd);
+}
+
+.btn-danger {
+    background-color: #f44336;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background-color: #d32f2f;
+}
