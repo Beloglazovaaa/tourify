@@ -101,3 +101,12 @@
 .btn-danger:hover {
     background-color: #d32f2f;
 }
+
+.tour-package-item {
+    list-style: none;
+}
+
+.tour-package-statuses {
+    display: flex;
+    gap: 15px;
+}
