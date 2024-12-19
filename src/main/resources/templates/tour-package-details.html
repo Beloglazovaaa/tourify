@@ -84,11 +84,6 @@
             </form>
         </div>
     </sec:authorize>
-
-    <!-- Если пользователь не авторизован, предложить войти в систему -->
-    <sec:authorize access="isAnonymous()">
-        <p style="margin-top: 15px;">Чтобы оставить отзыв, <a th:href="@{/login}">войдите в систему</a>.</p>
-    </sec:authorize>
 </main>
 
 <footer th:replace="~{footer.html :: footer}"></footer>

@@ -7,13 +7,21 @@
 
 .tour-package-details-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: space-between; /* Оставляем равномерное распределение элементов */
+    align-items: center; /* Центрируем элементы по вертикали */
     margin-top: 20px;
+    gap: 20px; /* Добавляем промежуток между элементами */
 }
 
 .tour-package-detail img {
-    height: 400px;
+    height: 400px; /* Ограничиваем высоту изображения */
+    width: auto; /* Сохраняем пропорции изображения */
+    max-width: 100%; /* Ограничиваем изображение по ширине контейнера */
+    border-radius: 10px; /* Добавляем скругленные углы */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Добавляем тень для улучшения внешнего вида */
+    object-fit: cover; /* Устанавливаем объектное позиционирование, чтобы изображение выглядело аккуратно */
+    display: block; /* Убираем потенциальные артефакты от inline-элементов */
+    margin: auto; /* Центрируем изображение внутри flex-контейнера */
 }
 
 .tour-package-reviews {
