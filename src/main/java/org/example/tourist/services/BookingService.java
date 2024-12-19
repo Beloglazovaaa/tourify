@@ -1,4 +1,5 @@
 package org.example.tourist.services;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -13,21 +14,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для работы с бронированиями пользователей.
+ * Предоставляет методы для создания, получения, обновления и удаления бронирований.
+ */
 @Service
 public class BookingService {
 
-    // Внедрение EntityManager
+    // Внедрение EntityManager для работы с управлением сущностями
     @PersistenceContext
     private EntityManager entityManager;
 
     private final BookingRepository bookingRepository;
     private final Cart cart;
 
+    /**
+     * Конструктор для инициализации сервисов и репозиториев.
+     *
+     * @param bookingRepository репозиторий для работы с сущностями Booking
+     * @param cart корзина, содержащая добавленные туры для бронирования
+     */
     @Autowired
     public BookingService(BookingRepository bookingRepository, Cart cart) {
         this.bookingRepository = bookingRepository;
@@ -35,10 +45,14 @@ public class BookingService {
     }
 
     /**
-     * Создать новое бронирование.
+     * Создает новое бронирование для пользователя.
+     * Бронирование включает выбранные туры из корзины.
+     * После создания бронирования корзина очищается.
      *
-     * @param bookingDto DTO для создания бронирования
-     * @throws RuntimeException если корзина пуста
+     * @param bookingDto объект DTO, содержащий данные для создания бронирования
+     * @param user текущий пользователь, который создает бронирование
+     * @return объект {@link Booking}, представляющий созданное бронирование
+     * @throws RuntimeException если корзина пуста и бронирование не может быть создано
      */
     @Transactional
     public Booking createBooking(BookingDto bookingDto, User user) {
@@ -48,35 +62,32 @@ public class BookingService {
             throw new RuntimeException("Корзина пуста! Невозможно создать бронирование.");
         }
 
-        // Применяем merge, чтобы все объекты TourPackage были отслеживаемыми сессией
+        // Применяем merge для того, чтобы все объекты TourPackage стали отслеживаемыми в текущей сессии
         tourPackages = tourPackages.stream()
                 .map(t -> entityManager.merge(t))  // Использование merge для обновления отсоединённых объектов
                 .collect(Collectors.toList());
 
-        // Создаем новый объект бронирования
+        // Создаем объект бронирования и устанавливаем его свойства
         Booking booking = new Booking();
         booking.setUser(user);
-        booking.setTourPackages(tourPackages);  // Устанавливаем список туров
+        booking.setTourPackages(tourPackages);
         booking.setBookingDate(new Date());
         booking.setTotalAmount(bookingDto.getTotalAmount());
         booking.setStatus(BookingStatus.CREATED);
 
-        // Сохраняем бронирование
+        // Сохраняем бронирование в базе данных
         bookingRepository.save(booking);
 
-        // Очищаем корзину
+        // Очищаем корзину после оформления бронирования
         cart.clearCart();
 
         return booking;
     }
 
-
-
-
     /**
      * Получить все бронирования.
      *
-     * @return список бронирований
+     * @return список всех бронирований
      */
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
@@ -86,8 +97,8 @@ public class BookingService {
      * Получить бронирование по ID.
      *
      * @param id ID бронирования
-     * @return бронирование
-     * @throws RuntimeException если бронирование не найдено
+     * @return объект {@link Booking}, соответствующий данному ID
+     * @throws RuntimeException если бронирование с указанным ID не найдено
      */
     public Booking getBookingById(Long id) {
         return bookingRepository.findById(id)
@@ -95,24 +106,24 @@ public class BookingService {
     }
 
     /**
-     * Обновить статус бронирования.
+     * Обновить статус существующего бронирования.
      *
-     * @param id     ID бронирования
-     * @param status новый статус
-     * @throws RuntimeException если бронирование не найдено или статус не может быть обновлен
+     * @param id ID бронирования
+     * @param status новый статус бронирования
+     * @throws RuntimeException если бронирование с указанным ID не найдено или статус не может быть обновлен
      */
     public void updateBookingStatus(Long id, BookingStatus status) {
         Booking booking = getBookingById(id);
-        // Добавьте логику проверки допустимых переходов статусов, если необходимо
         booking.setStatus(status);
         bookingRepository.save(booking);
     }
 
     /**
      * Подтвердить бронирование.
+     * Статус бронирования изменится на {@link BookingStatus#CONFIRMED}.
      *
      * @param id ID бронирования
-     * @throws RuntimeException если бронирование не найдено или уже подтверждено/отменено
+     * @throws RuntimeException если бронирование уже подтверждено или отменено
      */
     public void confirmBooking(Long id) {
         Booking booking = getBookingById(id);
@@ -125,9 +136,10 @@ public class BookingService {
 
     /**
      * Отменить бронирование.
+     * Статус бронирования изменится на {@link BookingStatus#CANCELLED}.
      *
      * @param id ID бронирования
-     * @throws RuntimeException если бронирование не найдено или уже завершено
+     * @throws RuntimeException если бронирование уже завершено или не может быть отменено
      */
     public void cancelBooking(Long id) {
         Booking booking = getBookingById(id);
@@ -139,30 +151,30 @@ public class BookingService {
     }
 
     /**
-     * Удалить бронирование по ID
+     * Удалить бронирование по ID.
      *
-     * @param bookingId ID бронирования
-     * @return true, если удаление успешно, иначе false
+     * @param bookingId ID бронирования, которое нужно удалить
+     * @return true, если удаление прошло успешно, иначе false
+     * @throws RuntimeException если бронирование с указанным ID не найдено
      */
     @Transactional
     public boolean deleteBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Бронирование не найдено"));
-        // Очистка связи с турпакетами
+
+        // Очистка связей с турпакетами, прежде чем удалить
         booking.getTourPackages().clear();
         bookingRepository.delete(booking);
         return true;
     }
 
-
     /**
-     * Получить бронирования по пользователю.
+     * Получить все бронирования для конкретного пользователя.
      *
-     * @param user текущий пользователь
-     * @return список бронирований пользователя
+     * @param user пользователь, для которого нужно получить бронирования
+     * @return список бронирований этого пользователя
      */
     public List<Booking> getBookingsByUser(User user) {
         return bookingRepository.findByUser(user);
     }
-
 }

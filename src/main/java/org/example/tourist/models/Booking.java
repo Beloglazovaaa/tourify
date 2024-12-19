@@ -5,20 +5,26 @@ import org.example.tourist.BookingStatus;
 
 import java.util.Date;
 import java.util.List;
+
+/**
+ * Класс, представляющий бронирование туристического пакета.
+ * Содержит информацию о пользователе, турпакетах, дате бронирования и статусе.
+ */
 @Entity
 @Table(name = "bookings")
 public class Booking {
 
+    /** Уникальный идентификатор бронирования */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Связь с пользователем
+    /** Связь с пользователем, который сделал бронирование */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // Связь с несколькими турами
+    /** Список туров, связанных с данным бронированием */
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "booking_tour_packages",
@@ -27,15 +33,32 @@ public class Booking {
     )
     private List<TourPackage> tourPackages;  // Список туров
 
+    /** Дата и время бронирования */
     @Temporal(TemporalType.TIMESTAMP)
     private Date bookingDate;
 
+    /** Общая сумма бронирования */
     private Integer totalAmount;
 
+    /** Статус бронирования */
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
+
+    /**
+     * Конструктор по умолчанию.
+     * Используется для создания пустого объекта бронирования.
+     */
     public Booking() {}
 
+    /**
+     * Конструктор для инициализации бронирования с указанными параметрами.
+     *
+     * @param user пользователь, сделавший бронирование
+     * @param tourPackages список туров, выбранных пользователем
+     * @param bookingDate дата и время бронирования
+     * @param totalAmount общая сумма бронирования
+     * @param status статус бронирования
+     */
     public Booking(User user, List<TourPackage> tourPackages, Date bookingDate, Integer totalAmount, BookingStatus status) {
         this.user = user;
         this.tourPackages = tourPackages;  // Используем список туров
@@ -44,21 +67,111 @@ public class Booking {
         this.status = status;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    /**
+     * Получает уникальный идентификатор бронирования.
+     *
+     * @return уникальный идентификатор бронирования
+     */
+    public Long getId() {
+        return id;
+    }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    /**
+     * Устанавливает уникальный идентификатор бронирования.
+     *
+     * @param id уникальный идентификатор бронирования
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public List<TourPackage> getTourPackages() { return tourPackages; }
-    public void setTourPackages(List<TourPackage> tourPackages) { this.tourPackages = tourPackages; }
+    /**
+     * Получает пользователя, сделавшего бронирование.
+     *
+     * @return объект пользователя
+     */
+    public User getUser() {
+        return user;
+    }
 
-    public Date getBookingDate() { return bookingDate; }
-    public void setBookingDate(Date bookingDate) { this.bookingDate = bookingDate; }
+    /**
+     * Устанавливает пользователя, сделавшего бронирование.
+     *
+     * @param user объект пользователя
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-    public Integer getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(Integer totalAmount) { this.totalAmount = totalAmount; }
+    /**
+     * Получает список туров, связанных с этим бронированием.
+     *
+     * @return список туров
+     */
+    public List<TourPackage> getTourPackages() {
+        return tourPackages;
+    }
 
-    public BookingStatus getStatus() { return status; }
-    public void setStatus(BookingStatus status) { this.status = status; }
+    /**
+     * Устанавливает список туров, связанных с этим бронированием.
+     *
+     * @param tourPackages список туров
+     */
+    public void setTourPackages(List<TourPackage> tourPackages) {
+        this.tourPackages = tourPackages;
+    }
+
+    /**
+     * Получает дату и время бронирования.
+     *
+     * @return дата и время бронирования
+     */
+    public Date getBookingDate() {
+        return bookingDate;
+    }
+
+    /**
+     * Устанавливает дату и время бронирования.
+     *
+     * @param bookingDate дата и время бронирования
+     */
+    public void setBookingDate(Date bookingDate) {
+        this.bookingDate = bookingDate;
+    }
+
+    /**
+     * Получает общую сумму бронирования.
+     *
+     * @return общая сумма бронирования
+     */
+    public Integer getTotalAmount() {
+        return totalAmount;
+    }
+
+    /**
+     * Устанавливает общую сумму бронирования.
+     *
+     * @param totalAmount общая сумма бронирования
+     */
+    public void setTotalAmount(Integer totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    /**
+     * Получает статус бронирования.
+     *
+     * @return статус бронирования
+     */
+    public BookingStatus getStatus() {
+        return status;
+    }
+
+    /**
+     * Устанавливает статус бронирования.
+     *
+     * @param status статус бронирования
+     */
+    public void setStatus(BookingStatus status) {
+        this.status = status;
+    }
 }

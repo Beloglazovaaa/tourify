@@ -8,26 +8,41 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Сервис для получения статистики пользователей и бронирований.
+ * Включает методы для получения общего числа пользователей, статистики по ролям пользователей и статистики по бронированиям.
+ */
 @Service
 public class StatisticsService {
 
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
 
+    /**
+     * Конструктор для инициализации сервисов {@link UserRepository} и {@link BookingRepository}.
+     *
+     * @param userRepository репозиторий пользователей
+     * @param bookingRepository репозиторий бронирований
+     */
     public StatisticsService(UserRepository userRepository, BookingRepository bookingRepository) {
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
     }
 
     /**
-     * Получить общее количество пользователей.
+     * Получает общее количество пользователей в системе.
+     *
+     * @return общее количество пользователей
      */
     public long getTotalUsers() {
         return userRepository.count();
     }
 
     /**
-     * Получить количество пользователей по ролям.
+     * Получает количество пользователей, сгруппированных по ролям.
+     * Статистика возвращается в виде карты, где ключ — это имя роли, а значение — количество пользователей с этой ролью.
+     *
+     * @return карта с количеством пользователей по каждой роли
      */
     public Map<String, Long> getUsersByRole() {
         List<Object[]> result = userRepository.countUsersByRole();
@@ -39,7 +54,10 @@ public class StatisticsService {
     }
 
     /**
-     * Получить статистику бронирований.
+     * Получает статистику по бронированиям, сгруппированную по месяцам.
+     * Статистика возвращается в виде карты, где ключ — это месяц (в виде строки), а значение — количество бронирований в этом месяце.
+     *
+     * @return карта с количеством бронирований по месяцам
      */
     public Map<String, Long> getBookingStats() {
         List<Object[]> result = bookingRepository.countBookingsPerMonth();

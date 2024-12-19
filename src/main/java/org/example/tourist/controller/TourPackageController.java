@@ -20,9 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Контроллер для работы с туристическими пакетами.
+ * Обрабатывает запросы для отображения, поиска, создания, редактирования, удаления и добавления отзывов к турпакетам.
+ */
 @Controller
 @RequestMapping("/tour-packages")
 public class TourPackageController {
+
     private final Cart cart;
     private final TourPackageService tourPackageService;
     private final UserService userService;
@@ -39,11 +44,10 @@ public class TourPackageController {
      * Показать страницу с туристическими пакетами.
      * Доступно для пользователей, агентов и администраторов.
      *
-     * @param model     модель для представления
+     * @param model модель для представления
      * @param principal текущий аутентифицированный пользователь
      * @return название представления "tour-packages"
      */
-
     @GetMapping
     public String tourPackagesPage(Model model, Principal principal) {
         List<TourPackage> tourPackages = tourPackageService.getAllTourPackages();
@@ -59,16 +63,14 @@ public class TourPackageController {
         return "tour-packages";
     }
 
-
-
-
     /**
      * Поиск туристических пакетов по названию.
      * Доступно для пользователей, агентов и администраторов.
      *
-     * @param name    название для поиска
-     * @param model   модель для представления
-     * @param sort текущий аутентифицированный пользователь
+     * @param name название для поиска
+     * @param model модель для представления
+     * @param sort поле для сортировки
+     * @param direction направление сортировки
      * @return название представления "tour-packages" с результатами поиска
      */
     @GetMapping("/search")
@@ -79,29 +81,34 @@ public class TourPackageController {
             Model model) {
 
         List<TourPackage> items = tourPackageService.searchTourPackages(name, sort, direction);
+
+        // Создаем карту canDeleteMap для результатов поиска
+        Map<Long, Boolean> canDeleteMap = items.stream()
+                .collect(Collectors.toMap(TourPackage::getId,
+                        tourPackage -> tourPackageService.canDeleteTourPackage(tourPackage.getId())));
+
+        // Добавляем данные в модель
         model.addAttribute("tourPackages", items);
+        model.addAttribute("canDeleteMap", canDeleteMap); // Добавляем canDeleteMap
         model.addAttribute("cartItems", cart.getCartItems());
         model.addAttribute("totalPrice", cart.getTotalPrice());
         model.addAttribute("pageTitle", "Поиск Туристических Пакетов | Tourify");
         return "tour-packages";
     }
 
-
     /**
      * Показать страницу создания нового туристического пакета.
      * Доступно только для администраторов и агентов.
      *
-     * @param model     модель для представления
+     * @param model модель для представления
      * @param principal текущий аутентифицированный пользователь
      * @return название представления "tour-package-form" или перенаправление при отсутствии прав
      */
     @GetMapping("/create")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_AGENT')")
     public String createTourPackagePage(Model model, Principal principal) {
-        if (hasRole(principal, "ROLE_ADMIN") || hasRole(principal, "ROLE_AGENT")) {
-            model.addAttribute("tourPackage", new TourPackage());
-            return "tour-package-form";
-        }
-        return "redirect:/access-denied";
+        model.addAttribute("tourPackage", new TourPackage());
+        return "tour-package-form";
     }
 
     /**
@@ -109,90 +116,90 @@ public class TourPackageController {
      * Доступно только для администраторов и агентов.
      *
      * @param tourPackage объект туристического пакета из формы
-     * @param principal   текущий аутентифицированный пользователь
+     * @param principal текущий аутентифицированный пользователь
      * @return перенаправление на страницу туристических пакетов или на страницу доступа запрещен
      */
     @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_AGENT')")
     public String createTourPackage(@ModelAttribute TourPackage tourPackage, Principal principal) {
-        if (hasRole(principal, "ROLE_ADMIN") || hasRole(principal, "ROLE_AGENT")) {
-            tourPackageService.addTourPackage(tourPackage);
-            return "redirect:/tour-packages";
-        }
-        return "redirect:/access-denied";
+        tourPackageService.addTourPackage(tourPackage);
+        return "redirect:/tour-packages";
     }
 
     /**
      * Удалить туристический пакет по ID.
      * Доступно только для администраторов.
      *
-     * @param id        ID туристического пакета
+     * @param id ID туристического пакета
      * @param principal текущий аутентифицированный пользователь
+     * @param model модель для представления
      * @return перенаправление на страницу туристических пакетов или на страницу доступа запрещен
      */
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String deleteTourPackage(@PathVariable Long id, Principal principal, Model model) {
-        if (!hasRole(principal, "ROLE_ADMIN")) {  // Проверка роли
-            return "redirect:/access-denied"; // Если нет нужной роли
-        }
-
         boolean canDelete = tourPackageService.canDeleteTourPackage(id); // Проверка на активные бронирования
         if (canDelete) {
             tourPackageService.deleteTourPackage(id);
             return "redirect:/tour-packages"; // После удаления возвращаем на страницу пакетов
         } else {
+            // Получаем обновленный список турпакетов
+            List<TourPackage> tourPackages = tourPackageService.getAllTourPackages();
+            Map<Long, Boolean> canDeleteMap = tourPackages.stream()
+                    .collect(Collectors.toMap(TourPackage::getId,
+                            tourPackage -> tourPackageService.canDeleteTourPackage(tourPackage.getId())));
+
+            // Добавляем данные в модель для отображения ошибки
+            model.addAttribute("tourPackages", tourPackages);
+            model.addAttribute("canDeleteMap", canDeleteMap);
+            model.addAttribute("cartItems", cart.getCartItems());
+            model.addAttribute("totalPrice", cart.getTotalPrice());
             model.addAttribute("errorMessage", "Невозможно удалить турпакет, так как для него есть активные бронирования.");
-            return "tour-packages"; // Если нельзя удалить, возвращаем на страницу с ошибкой
+            return "tour-packages"; // Возвращаем на страницу с ошибкой
         }
     }
-
-
-
 
     /**
      * Показать страницу редактирования туристического пакета.
      * Доступно только для администраторов и агентов.
      *
-     * @param id        ID туристического пакета
-     * @param model     модель для представления
+     * @param id ID туристического пакета
+     * @param model модель для представления
      * @param principal текущий аутентифицированный пользователь
      * @return название представления "tour-package-form" или перенаправление при отсутствии прав
      */
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_AGENT')")
     public String editTourPackagePage(@PathVariable Long id, Model model, Principal principal) {
-        if (hasRole(principal, "ROLE_ADMIN") || hasRole(principal, "ROLE_AGENT")) {
-            TourPackage tourPackage = tourPackageService.getTourPackageById(id);
-            model.addAttribute("tourPackage", tourPackage);
-            return "tour-package-form";
-        }
-        return "redirect:/access-denied";
+        TourPackage tourPackage = tourPackageService.getTourPackageById(id);
+        model.addAttribute("tourPackage", tourPackage);
+        return "tour-package-form";
     }
 
     /**
      * Обновить данные туристического пакета.
      * Доступно только для администраторов и агентов.
      *
-     * @param id           ID туристического пакета
-     * @param tourPackage  обновленный объект пакета из формы
+     * @param id ID туристического пакета
+     * @param tourPackage обновленный объект пакета из формы
      * @param availability флаг доступности пакета
-     * @param principal    текущий аутентифицированный пользователь
+     * @param principal текущий аутентифицированный пользователь
      * @return перенаправление на страницу туристических пакетов или на страницу доступа запрещен
      */
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_AGENT')")
     public String editTourPackage(@PathVariable Long id, @ModelAttribute TourPackage tourPackage,
                                   @RequestParam(required = false) Boolean availability, Principal principal) {
-        if (hasRole(principal, "ROLE_ADMIN") || hasRole(principal, "ROLE_AGENT")) {
-            tourPackage.setAvailability(availability != null && availability);
-            tourPackageService.updateTourPackage(id, tourPackage);
-            return "redirect:/tour-packages";
-        }
-        return "redirect:/access-denied";
+        tourPackage.setAvailability(availability != null && availability);
+        tourPackageService.updateTourPackage(id, tourPackage);
+        return "redirect:/tour-packages";
     }
 
     /**
      * Проверка, имеет ли пользователь определенную роль.
      *
      * @param principal текущий аутентифицированный пользователь
-     * @param role      роль для проверки
+     * @param role роль для проверки
      * @return true, если пользователь имеет указанную роль, иначе false
      */
     private boolean hasRole(Principal principal, String role) {
@@ -200,13 +207,24 @@ public class TourPackageController {
             return false;
         }
         Authentication authentication = (Authentication) principal;
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Object principalObj = authentication.getPrincipal();
+        if (!(principalObj instanceof UserDetails)) {
+            return false;
+        }
+        UserDetails userDetails = (UserDetails) principalObj;
         return userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch(r -> r.equals(role));
     }
 
-
+    /**
+     * Просмотр деталей туристического пакета.
+     *
+     * @param id ID туристического пакета
+     * @param model модель для представления
+     * @param principal текущий аутентифицированный пользователь
+     * @return название представления "tour-package-details" с деталями пакета и отзывами
+     */
     @GetMapping("/{id}")
     public String viewTourPackage(@PathVariable Long id, Model model, Principal principal) {
         TourPackage tourPackage = tourPackageService.getTourPackageById(id);
@@ -216,13 +234,18 @@ public class TourPackageController {
         List<Review> reviews = reviewService.getReviewsByTourPackage(tourPackage);
         model.addAttribute("reviews", reviews);
 
-        // Если нужно, передаем информацию о залогиненном пользователе
-        // model.addAttribute("loggedInUser", currentUser);
-
         return "tour-package-details"; // Шаблон страницы деталей тура, где есть секция с отзывами
     }
 
-    // Обработчик для добавления отзыва
+    /**
+     * Обработчик для добавления отзыва к туристическому пакету.
+     *
+     * @param tourPackageId ID туристического пакета
+     * @param rating оценка пакета
+     * @param comment комментарий пользователя
+     * @param principal текущий аутентифицированный пользователь
+     * @return перенаправление на страницу с деталями пакета
+     */
     @PostMapping("/addReview")
     @PreAuthorize("isAuthenticated()")
     public String addReview(@RequestParam Long tourPackageId,
@@ -232,8 +255,11 @@ public class TourPackageController {
 
         // Находим соответствующий турпакет
         TourPackage tourPackage = tourPackageService.getTourPackageById(tourPackageId);
+        if (tourPackage == null) {
+            return "redirect:/error/404"; // Перенаправление на страницу ошибки
+        }
 
-        // Находим текущего авторизованного пользователя (реализуйте логику получения User по principal)
+        // Находим текущего авторизованного пользователя
         User user = userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
 
@@ -244,6 +270,13 @@ public class TourPackageController {
         return "redirect:/tour-packages/" + tourPackageId;
     }
 
+    /**
+     * Получить детали туристического пакета по ID.
+     *
+     * @param id ID туристического пакета
+     * @param model модель для представления
+     * @return название представления "tour-package-details" с деталями пакета
+     */
     @GetMapping("/details/{id}")
     public String getTourPackageDetails(@PathVariable("id") Long id, Model model) {
         // Получаем пакет по ID
@@ -255,13 +288,9 @@ public class TourPackageController {
         }
 
         model.addAttribute("tourPackage", tourPackage);
-        // Если нужно, можете добавить логику получения отзывов и других данных
         List<Review> reviews = reviewService.getReviewsByTourPackage(tourPackage);
         model.addAttribute("reviews", reviews);
 
         return "tour-package-details"; // Имя вашего шаблона
     }
-
-
 }
-
