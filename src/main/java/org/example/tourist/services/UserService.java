@@ -96,11 +96,6 @@ public class UserService {
         user.getRoles().clear();
         user.getRoles().add(role);
 
-        // Альтернативный вариант:
-        // Set<Role> roles = new HashSet<>();
-        // roles.add(role);
-        // user.setRoles(roles);
-
         userRepository.save(user);
     }
 
@@ -111,7 +106,12 @@ public class UserService {
      */
     @Transactional
     public void deleteUser(Long userId) {
-        userRepository.deleteById(userId);
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isPresent()) {
+            userRepository.delete(userOpt.get());
+        } else {
+            throw new IllegalArgumentException("Пользователь не найден с id: " + userId);
+        }
     }
 
     /**

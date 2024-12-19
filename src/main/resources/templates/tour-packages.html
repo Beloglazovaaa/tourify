@@ -17,11 +17,12 @@
     </div>
 
     <form class="searchForm" action="/tour-packages/search" method="get">
-        <input type="text" name="name" placeholder="Поиск по туристическим пакетам">
+        <input type="text" name="name" placeholder="Поиск по названию">
         <select name="sort">
             <option value="name">По названию</option>
             <option value="price">По цене</option>
             <option value="availability">По доступности</option>
+            <option value="duration">По длительности</option>
         </select>
         <select name="direction">
             <option value="asc">По возрастанию</option>
@@ -34,6 +35,7 @@
         <div class="tour-package-item" th:each="tourPackage : ${tourPackages}">
             <img th:src="${tourPackage.imageUrl != null ? tourPackage.imageUrl : '/images/default.png'}" alt="Изображение туристического пакета"/>
             <h3 th:text="${tourPackage.name}">Название пакета</h3>
+            <p><strong>Количество дней:</strong> <span th:text="${tourPackage.duration}"></span></p>
             <p th:text="${tourPackage.price} + ' ₽'">Цена</p>
             <p>
                 <strong>Статус:</strong>

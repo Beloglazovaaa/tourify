@@ -82,6 +82,8 @@ public class TourPackageService {
         tourPackage.setImageUrl(updatedTourPackage.getImageUrl());
         tourPackage.setPrice(updatedTourPackage.getPrice());
         tourPackage.setAvailability(updatedTourPackage.getAvailability());
+        tourPackage.setDuration(updatedTourPackage.getDuration());
+
         return tourPackageRepository.save(tourPackage);
     }
 
@@ -112,6 +114,7 @@ public class TourPackageService {
             return tourPackageRepository.findAll(sorting);
         }
     }
+
 
     /**
      * Проверить, можно ли удалить туристический пакет.

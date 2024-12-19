@@ -67,11 +67,8 @@ public class Booking {
         this.status = status;
     }
 
-    /**
-     * Получает уникальный идентификатор бронирования.
-     *
-     * @return уникальный идентификатор бронирования
-     */
+    // Геттеры и сеттеры
+
     public Long getId() {
         return id;
     }

@@ -1,6 +1,7 @@
 package org.example.tourist.models;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,7 +26,6 @@ public class TourPackage {
     @Column(name = "description", nullable = false)
     private String description;
 
-
     /** URL изображения для туристического пакета */
     private String imageUrl;
 
@@ -40,11 +40,11 @@ public class TourPackage {
 
     /** Список отзывов, связанных с этим туристическим пакетом */
     @OneToMany(mappedBy = "tourPackage", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();
 
     /** Список бронирований, связанных с этим туристическим пакетом */
-    @OneToMany(mappedBy = "tourPackages", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Booking> bookings;
+    @ManyToMany(mappedBy = "tourPackages")
+    private List<Booking> bookings = new ArrayList<>();
 
     /**
      * Конструктор по умолчанию.
@@ -71,166 +71,113 @@ public class TourPackage {
         this.duration = duration;
     }
 
-    /**
-     * Получает уникальный идентификатор туристического пакета.
-     *
-     * @return уникальный идентификатор туристического пакета
-     */
+    // Геттеры и сеттеры
+
     public Long getId() {
         return id;
     }
 
-    /**
-     * Устанавливает уникальный идентификатор туристического пакета.
-     *
-     * @param id уникальный идентификатор туристического пакета
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * Получает название туристического пакета.
-     *
-     * @return название туристического пакета
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Устанавливает название туристического пакета.
-     *
-     * @param name название туристического пакета
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * Получает описание туристического пакета.
-     *
-     * @return описание туристического пакета
-     */
     public String getDescription() {
         return description;
     }
 
-    /**
-     * Устанавливает описание туристического пакета.
-     *
-     * @param description описание туристического пакета
-     */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * Получает URL изображения туристического пакета.
-     *
-     * @return URL изображения туристического пакета
-     */
     public String getImageUrl() {
         return imageUrl;
     }
 
-    /**
-     * Устанавливает URL изображения туристического пакета.
-     *
-     * @param imageUrl URL изображения туристического пакета
-     */
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    /**
-     * Получает цену туристического пакета.
-     *
-     * @return цена туристического пакета
-     */
     public Integer getPrice() {
         return price;
     }
 
-    /**
-     * Устанавливает цену туристического пакета.
-     *
-     * @param price цена туристического пакета
-     */
     public void setPrice(Integer price) {
         this.price = price;
     }
 
-    /**
-     * Получает доступность туристического пакета.
-     *
-     * @return доступность туристического пакета (true, если доступен, иначе false)
-     */
     public Boolean getAvailability() {
         return availability;
     }
 
-    /**
-     * Устанавливает доступность туристического пакета.
-     *
-     * @param availability доступность туристического пакета
-     */
     public void setAvailability(Boolean availability) {
         this.availability = availability;
     }
 
-    /**
-     * Получает длительность туристического пакета.
-     *
-     * @return длительность туристического пакета в днях
-     */
     public Integer getDuration() {
         return duration;
     }
 
-    /**
-     * Устанавливает длительность туристического пакета.
-     *
-     * @param duration длительность туристического пакета в днях
-     */
     public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
-    /**
-     * Получает список бронирований, связанных с этим туристическим пакетом.
-     *
-     * @return список бронирований
-     */
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
     public List<Booking> getBookings() {
         return bookings;
     }
 
-    /**
-     * Устанавливает список бронирований, связанных с этим туристическим пакетом.
-     *
-     * @param bookings список бронирований
-     */
     public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
 
     /**
-     * Получает список отзывов, связанных с этим туристическим пакетом.
+     * Добавляет отзыв к туристическому пакету.
      *
-     * @return список отзывов
+     * @param review отзыв, который нужно добавить
      */
-    public List<Review> getReviews() {
-        return reviews;
+    public void addReview(Review review) {
+        reviews.add(review);
+        review.setTourPackage(this);
     }
 
     /**
-     * Устанавливает список отзывов, связанных с этим туристическим пакетом.
+     * Удаляет отзыв из туристического пакета.
      *
-     * @param reviews список отзывов
+     * @param review отзыв, который нужно удалить
      */
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
+    public void removeReview(Review review) {
+        reviews.remove(review);
+        review.setTourPackage(null);
+    }
+
+    /**
+     * Добавляет бронирование к туристическому пакету.
+     *
+     * @param booking бронирование, которое нужно добавить
+     */
+    public void addBooking(Booking booking) {
+        bookings.add(booking);
+        booking.getTourPackages().add(this);
+    }
+
+    /**
+     * Удаляет бронирование из туристического пакета.
+     *
+     * @param booking бронирование, которое нужно удалить
+     */
+    public void removeBooking(Booking booking) {
+        bookings.remove(booking);
+        booking.getTourPackages().remove(this);
     }
 }
-

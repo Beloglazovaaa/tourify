@@ -61,110 +61,48 @@ public class Review {
         this.reviewDate = LocalDateTime.now();  // Устанавливаем текущую дату и время отзыва
     }
 
-    /**
-     * Получает уникальный идентификатор отзыва.
-     *
-     * @return уникальный идентификатор отзыва
-     */
+    // Геттеры и сеттеры
+
     public Long getId() {
         return id;
     }
 
-    /**
-     * Получает пользователя, оставившего отзыв.
-     *
-     * @return объект пользователя
-     */
     public User getUser() {
         return user;
     }
 
-    /**
-     * Получает туристический пакет, на который оставлен отзыв.
-     *
-     * @return объект туристического пакета
-     */
-    public TourPackage getTourPackage() {
-        return tourPackage;
-    }
-
-    /**
-     * Получает рейтинг отзыва.
-     *
-     * @return рейтинг от 1 до 5
-     */
-    public int getRating() {
-        return rating;
-    }
-
-    /**
-     * Получает текстовый комментарий отзыва.
-     *
-     * @return текстовый комментарий
-     */
-    public String getComment() {
-        return comment;
-    }
-
-    /**
-     * Получает дату и время создания отзыва.
-     *
-     * @return дата и время создания отзыва
-     */
-    public LocalDateTime getReviewDate() {
-        return reviewDate;
-    }
-
-    /**
-     * Устанавливает уникальный идентификатор отзыва.
-     *
-     * @param id уникальный идентификатор отзыва
-     */
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    /**
-     * Устанавливает пользователя, оставившего отзыв.
-     *
-     * @param user объект пользователя
-     */
     public void setUser(User user) {
         this.user = user;
     }
 
-    /**
-     * Устанавливает туристический пакет, на который оставлен отзыв.
-     *
-     * @param tourPackage объект туристического пакета
-     */
+    public TourPackage getTourPackage() {
+        return tourPackage;
+    }
+
     public void setTourPackage(TourPackage tourPackage) {
         this.tourPackage = tourPackage;
     }
 
-    /**
-     * Устанавливает рейтинг отзыва.
-     *
-     * @param rating рейтинг от 1 до 5
-     */
+    public int getRating() {
+        return rating;
+    }
+
     public void setRating(int rating) {
         this.rating = rating;
     }
 
-    /**
-     * Устанавливает текстовый комментарий отзыва.
-     *
-     * @param comment текстовый комментарий
-     */
+    public String getComment() {
+        return comment;
+    }
+
     public void setComment(String comment) {
         this.comment = comment;
     }
 
-    /**
-     * Устанавливает дату и время создания отзыва.
-     *
-     * @param reviewDate дата и время создания отзыва
-     */
+    public LocalDateTime getReviewDate() {
+        return reviewDate;
+    }
+
     public void setReviewDate(LocalDateTime reviewDate) {
         this.reviewDate = reviewDate;
     }

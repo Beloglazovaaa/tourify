@@ -1,13 +1,12 @@
 package org.example.tourist.controller;
 
-import org.example.tourist.models.User;
+
 import org.example.tourist.services.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Контроллер для административной панели.
@@ -32,6 +31,7 @@ public class AdminController {
      * @return имя шаблона страницы управления пользователями
      */
     @GetMapping("/users")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String getManageUsersPage(Model model) {
         // Добавляем в модель всех пользователей для отображения в шаблоне
         model.addAttribute("users", userService.getAllUsers());
@@ -47,9 +47,16 @@ public class AdminController {
      * @return перенаправление на страницу управления пользователями
      */
     @PostMapping("/users/update-role")
-    public String updateUserRole(@RequestParam Long userId, @RequestParam String newRole) {
-        // Обновляем роль пользователя через сервис
-        userService.updateUserRole(userId, newRole);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String updateUserRole(@RequestParam Long userId, @RequestParam String newRole, Model model) {
+        try {
+            // Обновляем роль пользователя через сервис
+            userService.updateUserRole(userId, newRole);
+        } catch (IllegalArgumentException ex) {
+            // Добавляем сообщение об ошибке и перенаправляем на страницу ошибок
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "error/400";  // Путь к вашей странице 400
+        }
         // Перенаправляем обратно на страницу управления пользователями
         return "redirect:/admin/users";
     }
@@ -62,9 +69,24 @@ public class AdminController {
      * @return перенаправление на страницу управления пользователями
      */
     @PostMapping("/users/delete")
-    public String deleteUser(@RequestParam Long userId) {
-        // Удаляем пользователя через сервис
-        userService.deleteUser(userId);
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String deleteUser(@RequestParam Long userId, Model model) {
+        try {
+            // Удаляем пользователя через сервис
+            userService.deleteUser(userId);
+        } catch (IllegalArgumentException ex) {
+            // Добавляем сообщение об ошибке и перенаправляем на страницу ошибок
+            model.addAttribute("errorMessage", ex.getMessage());
+            return "error/400";  // Путь к вашей странице 400
+        } catch (DataIntegrityViolationException ex) {
+            // Обработка ошибок нарушения целостности данных
+            model.addAttribute("errorMessage", "Невозможно удалить пользователя из-за связанных данных.");
+            return "error/500";  // Путь к вашей странице 500
+        } catch (Exception ex) {
+            // Обработка других исключений
+            model.addAttribute("errorMessage", "Произошла ошибка: " + ex.getMessage());
+            return "error/500";  // Путь к вашей странице 500
+        }
         // Перенаправляем обратно на страницу управления пользователями
         return "redirect:/admin/users";
     }
@@ -76,6 +98,7 @@ public class AdminController {
      * @return имя шаблона страницы статистики
      */
     @GetMapping("/statistics")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String statisticsPage() {
         return "admin/statistics";  // Название HTML шаблона для страницы статистики
     }
